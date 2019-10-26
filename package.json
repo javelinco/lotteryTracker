@@ -1,0 +1,11 @@
+{
+  "name": "lotterytracker",
+  "version": "1.0.0",
+  "description": "Tracks lottery tickets, drawings, winnings and ROI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mark Munson",
+  "license": "ISC"
+}
