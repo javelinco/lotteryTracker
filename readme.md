@@ -18,7 +18,8 @@ The following describes the database schema.
 ### PowerballTicketNumber
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
-| TicketId    | UniqueIdentifier, Not Null, Primary Key | The unique id of the ticket |
+| TicketNumberId | UniqueIdentifier, Not Null, Primary Key | The unique id of the ticket number |
+| TicketId    | UniqueIdentifier, Not Null | The unique id of the ticket |
 | Number01 | Integer, Not Null | The first number |
 | Number02 | Integer, Not Null | The second number |
 | Number03 | Integer, Not Null | The third number |
