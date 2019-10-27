@@ -4,7 +4,7 @@ The lottery tracking allows the user to input the tickets they have purchased, a
 ## Database Schema
 The following describes the database schema.
 
-# PowerballTicket
+### PowerballTicket
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 | TicketId    | UniqueIdentifier, Not Null, Primary Key | The unique id of the ticket |
@@ -15,7 +15,7 @@ The following describes the database schema.
 | CreateDate | DateTime, Not Null | The date & time the record was created |
 | UpdateDate | DateTime, Not Null | The date & time the record was last updated |
 
-#PowerballTicketNumber
+### PowerballTicketNumber
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 | TicketId    | UniqueIdentifier, Not Null, Primary Key | The unique id of the ticket |
@@ -26,7 +26,7 @@ The following describes the database schema.
 | Number05 | Integer, Not Null | The fifth number |
 | PowerNumber | Integer, Not Null | The power number |
 
-# PowerballTicketDrawing
+### PowerballTicketDrawing
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 | TicketId    | UniqueIdentifier, Not Null, Primary Key | The unique id of the ticket |
@@ -34,7 +34,7 @@ The following describes the database schema.
 | CreateDate | DateTime, Not Null | The date & time the record was created |
 | UpdateDate | DateTime, Not Null | The date & time the record was last updated |
 
-# PowerballDrawing
+### PowerballDrawing
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 | DrawingDate | Date, Not Null, Primary Key | The date of the drawing |
@@ -47,7 +47,7 @@ The following describes the database schema.
 | CreateDate | DateTime, Not Null | The date & time the record was created |
 | UpdateDate | DateTime, Not Null | The date & time the record was last updated |
 
-# OwnerWinning
+### OwnerWinning
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 | TicketId    | UniqueIdentifier, Not Null, Primary Key | The unique id of the ticket |
