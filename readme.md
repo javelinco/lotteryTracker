@@ -25,6 +25,8 @@ The following describes the database schema.
 | Number04 | Integer, Not Null | The fourth number |
 | Number05 | Integer, Not Null | The fifth number |
 | PowerNumber | Integer, Not Null | The power number |
+| CreateDate | DateTime, Not Null | The date & time the record was created |
+| UpdateDate | DateTime, Not Null | The date & time the record was last updated |
 
 ### PowerballTicketDrawing
 | Column Name | Type | Description |
@@ -51,3 +53,7 @@ The following describes the database schema.
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 | TicketId    | UniqueIdentifier, Not Null, Primary Key | The unique id of the ticket |
+| DrawingDate | Date, Not Null, Primary Key | The date of the drawing |
+| Amount | Money, Not Null | The amount the ticket has won for a given drawing |
+| CreateDate | DateTime, Not Null | The date & time the record was created |
+| UpdateDate | DateTime, Not Null | The date & time the record was last updated |
