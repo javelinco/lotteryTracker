@@ -11,7 +11,6 @@ import * as moment from 'moment';
 export type databaseSaveFunc = (purchase: powerballTicketPurchase) => Promise<void>;
 
 export async function AddPowerballTicket(purchaseDate: Date,
-                                   cost: number,
                                    powerPlay: boolean,
                                    numbers: Array<powerballNumber>,
                                    drawings: number,
@@ -21,7 +20,7 @@ export async function AddPowerballTicket(purchaseDate: Date,
     const powerballTicket: powerballTicket = {
         ticketId: uuid(),
         purchaseDate: purchaseDate,
-        cost: cost,
+        cost: numbers.length * drawings * (powerPlay ? 3 : 2),
         powerPlay: powerPlay,
         createDate: currentDate,
         updateDate: currentDate
