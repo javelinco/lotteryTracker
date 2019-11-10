@@ -4,8 +4,21 @@
   "description": "Tracks lottery tickets, drawings, winnings and ROI",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "npx jest --watch"
   },
   "author": "Mark Munson",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^24.0.22",
+    "@types/uuid": "^3.4.6",
+    "eslint": "^6.6.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "uuid": "^3.3.3"
+  }
 }
