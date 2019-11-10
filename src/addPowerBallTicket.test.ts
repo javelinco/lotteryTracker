@@ -46,11 +46,22 @@ const powerballNumbers: Array<powerballNumber> = [
     }
 ];
 
-test('Add Powerball Ticket', () => {
+test('Add real ticket', async () => {
+    const numbers: Array<powerballNumber> = [
+        { number01: 5, number02: 38, number03: 46, number04: 53, number05: 56, powerNumber: 23 },
+        { number01: 7, number02: 20, number03: 41, number04: 49, number05: 66, powerNumber: 22 },
+        { number01: 17, number02: 19, number03: 32, number04: 62, number05: 67, powerNumber: 6 },
+        { number01: 18, number02: 32, number03: 48, number04: 67, number05: 69, powerNumber: 1 },
+        { number01: 4, number02: 9, number03: 57, number04: 58, number05: 68, powerNumber: 5 }
+    ]
+    await AddPowerballTicket(new Date('11/4/2019'), 75, true, numbers, 5);
+}, 10000000)
+
+test('Add Powerball Ticket', async () => {
     const purchaseDate = new Date('11/9/2019');
     const cost = 75;
     const powerplay = true;
-    const powerballTicketPurchase = AddPowerballTicket(purchaseDate, cost, powerplay, powerballNumbers, 5);
+    const powerballTicketPurchase = await AddPowerballTicket(purchaseDate, cost, powerplay, powerballNumbers, 5, null);
 
     //Check powerball ticket
     expect(powerballTicketPurchase.ticket.cost).toBe(cost);
