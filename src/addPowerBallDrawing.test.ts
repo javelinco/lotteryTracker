@@ -58,9 +58,9 @@ describe('Add Powerball Drawing', () => {
             number,
             multiplier,
             grandPrizeAmount,
-            null,
-            null,
-            null
+            undefined,
+            undefined,
+            undefined
         );
         console.log('Winnings: ', ownerWinnings);
     });
@@ -83,8 +83,8 @@ describe('Add Powerball Drawing', () => {
             multiplier,
             grandPrizeAmount,
             getDrawingNumbers,
-            null,
-            null
+            undefined,
+            undefined
         );
     
         expect(ownerWinnings).toBeTruthy();

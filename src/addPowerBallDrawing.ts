@@ -160,12 +160,12 @@ async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber
         for await (const dataRow of stream) {
             const number: drawingNumber = {
                 ticketId: `${dataRow.get('ticketid')}`,
-                number01: +dataRow.get('number01'),
-                number02: +dataRow.get('number02'),
-                number03: +dataRow.get('number03'),
-                number04: +dataRow.get('number04'),
-                number05: +dataRow.get('number05'),
-                powerNumber: +dataRow.get('powernumber'),
+                number01: Number(dataRow.get('number01')) || 0,
+                number02: Number(dataRow.get('number02')) || 0,
+                number03: Number(dataRow.get('number03')) || 0,
+                number04: Number(dataRow.get('number04')) || 0,
+                number05: Number(dataRow.get('number05')) || 0,
+                powerNumber: Number(dataRow.get('powernumber')) || 0,
                 powerPlay: `${dataRow.get('powerplay')}` === 'true'
             }
             drawingNumbers.push(number);

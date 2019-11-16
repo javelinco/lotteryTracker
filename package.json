@@ -4,12 +4,14 @@
   "description": "Tracks lottery tickets, drawings, winnings and ROI",
   "main": "index.js",
   "scripts": {
+    "build" : "tsc",
     "test": "jest",
     "test:watch": "npx jest --watch"
   },
   "author": "Mark Munson",
   "license": "ISC",
   "devDependencies": {
+    "@types/hapi__joi": "^16.0.3",
     "@types/jest": "^24.0.22",
     "@types/uuid": "^3.4.6",
     "eslint": "^6.6.0",
@@ -19,6 +21,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "@hapi/joi": "^16.1.7",
     "dotenv": "^8.2.0",
     "moment": "^2.24.0",
     "ts-postgres": "^1.1.0",
