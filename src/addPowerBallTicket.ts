@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Client, Query } from 'ts-postgres';
+import { Client } from 'ts-postgres';
 import { powerballNumber } from "./interfaces/powerballNumber";
 import { powerballTicket } from "./interfaces/powerballTicket";
 import { powerballTicketNumber } from "./interfaces/powerballTicketNumber";
@@ -7,14 +7,16 @@ import { powerballTicketPurchase } from "./interfaces/powerballTicketPurchase";
 import { powerballTicketDrawing } from "./interfaces/powerballTicketDrawing";
 import { postgresConfig } from './configuration/postgressConfig';
 import * as moment from 'moment';
+import { dateTimeFormat, dateFormat } from './helpers/dateFormat';
 
 export type databaseSaveFunc = (purchase: powerballTicketPurchase) => Promise<void>;
 
-export async function AddPowerballTicket(purchaseDate: Date,
-                                   powerPlay: boolean,
-                                   numbers: Array<powerballNumber>,
-                                   drawings: number,
-                                   databaseSave: databaseSaveFunc = recordPurchase): Promise<powerballTicketPurchase> {
+export async function AddPowerballTicket(
+        purchaseDate: Date,
+        powerPlay: boolean,
+        numbers: Array<powerballNumber>,
+        drawings: number,
+        databaseSave: databaseSaveFunc = recordPurchase): Promise<powerballTicketPurchase> {
     const currentDate = new Date();
 
     const powerballTicket: powerballTicket = {
@@ -69,9 +71,6 @@ async function recordPurchase(purchase: powerballTicketPurchase): Promise<void> 
     const client = new Client(postgresConfig);
     try {
         await client.connect();
-
-        const dateFormat = 'YYYY/MM/DD';
-        const dateTimeFormat = 'YYYY/MM/DD HH:mm:ss';
 
         //PowerballTicket
         const powerballTicketQuery = 'INSERT INTO PowerballTicket '

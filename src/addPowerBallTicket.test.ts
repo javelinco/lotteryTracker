@@ -46,59 +46,61 @@ const powerballNumbers: Array<powerballNumber> = [
     }
 ];
 
-test('Add real ticket', async () => {
-    const numbers: Array<powerballNumber> = [
-        { number01: 5, number02: 38, number03: 46, number04: 53, number05: 56, powerNumber: 23 },
-        { number01: 7, number02: 20, number03: 41, number04: 49, number05: 66, powerNumber: 22 },
-        { number01: 17, number02: 19, number03: 32, number04: 62, number05: 67, powerNumber: 6 },
-        { number01: 18, number02: 32, number03: 48, number04: 67, number05: 69, powerNumber: 1 },
-        { number01: 4, number02: 9, number03: 57, number04: 58, number05: 68, powerNumber: 5 }
-    ]
-    await AddPowerballTicket(new Date('11/4/2019'), true, numbers, 5, null);
-}, 10000000)
+describe('Add Powerball Ticket', () => {
+    it('Add real ticket', async () => {
+        const numbers: Array<powerballNumber> = [
+            { number01: 5, number02: 38, number03: 46, number04: 53, number05: 56, powerNumber: 23 },
+            { number01: 7, number02: 20, number03: 41, number04: 49, number05: 66, powerNumber: 22 },
+            { number01: 17, number02: 19, number03: 32, number04: 62, number05: 67, powerNumber: 6 },
+            { number01: 18, number02: 32, number03: 48, number04: 67, number05: 69, powerNumber: 1 },
+            { number01: 4, number02: 9, number03: 57, number04: 58, number05: 68, powerNumber: 5 }
+        ]
+        await AddPowerballTicket(new Date('11/4/2019'), true, numbers, 5, null);
+    }, 10000000);
 
-test('Add Powerball Ticket', async () => {
-    const purchaseDate = new Date('11/9/2019');
-    const cost = 75;
-    const powerplay = true;
-    const powerballTicketPurchase = await AddPowerballTicket(purchaseDate, powerplay, powerballNumbers, 5, null);
+    it('Should be golden path', async () => {
+        const purchaseDate = new Date('11/9/2019');
+        const cost = 75;
+        const powerplay = true;
+        const powerballTicketPurchase = await AddPowerballTicket(purchaseDate, powerplay, powerballNumbers, 5, null);
 
-    //Check powerball ticket
-    expect(powerballTicketPurchase.ticket.cost).toBe(cost);
-    expect(powerballTicketPurchase.ticket.powerPlay).toBe(powerplay);
-    expect(powerballTicketPurchase.ticket.purchaseDate).toBe(purchaseDate);
-    expect(powerballTicketPurchase.ticket.ticketId).toBeDefined();
-    expect(powerballTicketPurchase.ticket.createDate).toBeDefined();
-    expect(powerballTicketPurchase.ticket.updateDate).toBeDefined();
-    expect(powerballTicketPurchase.ticket.ownerId).toBeUndefined();
+        //Check powerball ticket
+        expect(powerballTicketPurchase.ticket.cost).toBe(cost);
+        expect(powerballTicketPurchase.ticket.powerPlay).toBe(powerplay);
+        expect(powerballTicketPurchase.ticket.purchaseDate).toBe(purchaseDate);
+        expect(powerballTicketPurchase.ticket.ticketId).toBeDefined();
+        expect(powerballTicketPurchase.ticket.createDate).toBeDefined();
+        expect(powerballTicketPurchase.ticket.updateDate).toBeDefined();
+        expect(powerballTicketPurchase.ticket.ownerId).toBeUndefined();
 
-    //Check powerball ticket numbers
-    expect(powerballTicketPurchase.numbers).toEqual(
-        expect.arrayContaining(powerballNumbers.map((number: powerballNumber) => {
-            return expect.objectContaining(number);
-        }))
-    );
-    powerballTicketPurchase.numbers.forEach((number: powerballTicketNumber) => {
-        expect(number.ticketId).toBe(powerballTicketPurchase.ticket.ticketId);
-        expect(number.ticketNumberId).toBeDefined();
-        expect(number.createDate).toBe(powerballTicketPurchase.ticket.createDate);
-        expect(number.updateDate).toBe(powerballTicketPurchase.ticket.updateDate);
-    });
+        //Check powerball ticket numbers
+        expect(powerballTicketPurchase.numbers).toEqual(
+            expect.arrayContaining(powerballNumbers.map((number: powerballNumber) => {
+                return expect.objectContaining(number);
+            }))
+        );
+        powerballTicketPurchase.numbers.forEach((number: powerballTicketNumber) => {
+            expect(number.ticketId).toBe(powerballTicketPurchase.ticket.ticketId);
+            expect(number.ticketNumberId).toBeDefined();
+            expect(number.createDate).toBe(powerballTicketPurchase.ticket.createDate);
+            expect(number.updateDate).toBe(powerballTicketPurchase.ticket.updateDate);
+        });
 
-    //Check powerball ticket drawings    
-    const expectedDrawingDates = [
-        new Date('11/9/2019'),
-        new Date('11/13/2019'),
-        new Date('11/16/2019'),
-        new Date('11/20/2019'),
-        new Date('11/23/2019')
-    ];
-    expect(powerballTicketPurchase.drawings.map((drawing: powerballTicketDrawing) => {
-        return drawing.drawingDate;
-    })).toEqual(expectedDrawingDates);
-    powerballTicketPurchase.drawings.forEach((drawing: powerballTicketDrawing) => {
-        expect(drawing.ticketId).toBe(powerballTicketPurchase.ticket.ticketId);
-        expect(drawing.createDate).toBe(powerballTicketPurchase.ticket.createDate);
-        expect(drawing.updateDate).toBe(powerballTicketPurchase.ticket.updateDate);
+        //Check powerball ticket drawings    
+        const expectedDrawingDates = [
+            new Date('11/9/2019'),
+            new Date('11/13/2019'),
+            new Date('11/16/2019'),
+            new Date('11/20/2019'),
+            new Date('11/23/2019')
+        ];
+        expect(powerballTicketPurchase.drawings.map((drawing: powerballTicketDrawing) => {
+            return drawing.drawingDate;
+        })).toEqual(expectedDrawingDates);
+        powerballTicketPurchase.drawings.forEach((drawing: powerballTicketDrawing) => {
+            expect(drawing.ticketId).toBe(powerballTicketPurchase.ticket.ticketId);
+            expect(drawing.createDate).toBe(powerballTicketPurchase.ticket.createDate);
+            expect(drawing.updateDate).toBe(powerballTicketPurchase.ticket.updateDate);
+        });
     });
 });
