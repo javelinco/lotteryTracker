@@ -16,7 +16,7 @@ export async function AddPowerballTicket(
         powerPlay: boolean,
         numbers: Array<powerballNumber>,
         drawings: number,
-        databaseSave: databaseSaveFunc = recordPurchase): Promise<powerballTicketPurchase> {
+        databaseSave: databaseSaveFunc | null = recordPurchase): Promise<powerballTicketPurchase> {
     const currentDate = new Date();
 
     const powerballTicket: powerballTicket = {

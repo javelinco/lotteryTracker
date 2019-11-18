@@ -42,25 +42,25 @@ async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber
 
 describe('Add Powerball Drawing', () => {
     it('Should record real drawing', async () => {
-        const drawingDate = new Date('11/13/2019');
+        const drawingDate = new Date('11/6/2019');
         const number: powerballNumber = {
-            number01: 23,
-            number02: 26,
-            number03: 27,
-            number04: 28,
-            number05: 66,
-            powerNumber: 11
+            number01: 15,
+            number02: 28,
+            number03: 46,
+            number04: 62,
+            number05: 64,
+            powerNumber: 17
         };
-        const multiplier = 2;
+        const multiplier = 3;
         const grandPrizeAmount = 0;
         const ownerWinnings = await AddPowerBallDrawing(
             drawingDate,
             number,
             multiplier,
             grandPrizeAmount,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null
         );
         console.log('Winnings: ', ownerWinnings);
     });
@@ -83,8 +83,8 @@ describe('Add Powerball Drawing', () => {
             multiplier,
             grandPrizeAmount,
             getDrawingNumbers,
-            undefined,
-            undefined
+            null,
+            null
         );
     
         expect(ownerWinnings).toBeTruthy();

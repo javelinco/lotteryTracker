@@ -55,14 +55,14 @@ describe('Add Powerball Ticket', () => {
             { number01: 18, number02: 32, number03: 48, number04: 67, number05: 69, powerNumber: 1 },
             { number01: 4, number02: 9, number03: 57, number04: 58, number05: 68, powerNumber: 5 }
         ]
-        await AddPowerballTicket(new Date('11/4/2019'), true, numbers, 5, undefined);
+        await AddPowerballTicket(new Date('11/4/2019'), true, numbers, 5, null);
     }, 10000000);
 
     it('Should be golden path', async () => {
         const purchaseDate = new Date('11/9/2019');
         const cost = 75;
         const powerplay = true;
-        const powerballTicketPurchase = await AddPowerballTicket(purchaseDate, powerplay, powerballNumbers, 5, undefined);
+        const powerballTicketPurchase = await AddPowerballTicket(purchaseDate, powerplay, powerballNumbers, 5, null);
 
         //Check powerball ticket
         expect(powerballTicketPurchase.ticket.cost).toBe(cost);

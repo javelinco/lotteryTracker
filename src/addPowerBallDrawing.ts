@@ -16,9 +16,9 @@ export async function AddPowerBallDrawing(
         number: powerballNumber,
         multiplier: number,
         grandPrizeAmount: number,
-        getDrawingNumbersFunc: getDrawingNumbersFunc = getDrawingNumbers,
-        recordDrawingFunc: recordDrawingFunc = recordDrawing,
-        recordWinningsFunc: recordWinningsFunc = recordWinnings) : Promise<Array<ownerWinning>> {
+        getDrawingNumbersFunc: getDrawingNumbersFunc | null = getDrawingNumbers,
+        recordDrawingFunc: recordDrawingFunc | null = recordDrawing,
+        recordWinningsFunc: recordWinningsFunc | null = recordWinnings) : Promise<Array<ownerWinning>> {
     const currentDate = new Date();
 
     const powerballDrawing: powerballDrawing = {
@@ -57,7 +57,9 @@ export async function AddPowerBallDrawing(
                 createDate: currentDate,
                 updateDate: currentDate
             }
-            ownerWinnings.push(ownerWinning);
+            if (!ownerWinnings.includes(ownerWinning)) {
+                ownerWinnings.push(ownerWinning);
+            }
 
             if (recordWinningsFunc) {
                 await recordWinningsFunc(ownerWinning);
@@ -150,7 +152,7 @@ async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber
 
         // Get all tickets that have a drawing date that matches the drawing date
         const ticketQuery =
-              'SELECT n.*, t.PowerPlay '
+              'SELECT DISTINCT n.*, t.PowerPlay '
             + 'FROM PowerballTicketDrawing d '
             + '    INNER JOIN PowerballTicketNumber n ON d.TicketId = n.TicketId '
             + '    INNER JOIN PowerballTicket t ON d.TicketId = t.TicketId '
