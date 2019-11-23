@@ -49,13 +49,13 @@ const powerballNumbers: Array<powerballNumber> = [
 describe('Add Powerball Ticket', () => {
     it('Add real ticket', async () => {
         const numbers: Array<powerballNumber> = [
-            { number01: 5, number02: 38, number03: 46, number04: 53, number05: 56, powerNumber: 23 },
-            { number01: 7, number02: 20, number03: 41, number04: 49, number05: 66, powerNumber: 22 },
-            { number01: 17, number02: 19, number03: 32, number04: 62, number05: 67, powerNumber: 6 },
-            { number01: 18, number02: 32, number03: 48, number04: 67, number05: 69, powerNumber: 1 },
-            { number01: 4, number02: 9, number03: 57, number04: 58, number05: 68, powerNumber: 5 }
+            { number01: 15, number02: 21, number03: 39, number04: 58, number05: 66, powerNumber: 6 },
+            { number01: 4, number02: 10, number03: 36, number04: 60, number05: 62, powerNumber: 22 },
+            { number01: 6, number02: 32, number03: 43, number04: 57, number05: 65, powerNumber: 24 },
+            { number01: 34, number02: 43, number03: 49, number04: 51, number05: 67, powerNumber: 26 },
+            { number01: 3, number02: 8, number03: 16, number04: 40, number05: 58, powerNumber: 19 }
         ]
-        await AddPowerballTicket(new Date('11/4/2019'), true, numbers, 5, null);
+        await AddPowerballTicket(new Date('11/23/2019'), true, numbers, 5, null);
     }, 10000000);
 
     it('Should be golden path', async () => {

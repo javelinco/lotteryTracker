@@ -44,14 +44,14 @@ describe('Add Powerball Drawing', () => {
     it('Should record real drawing', async () => {
         const drawingDate = new Date('11/6/2019');
         const number: powerballNumber = {
-            number01: 15,
-            number02: 28,
-            number03: 46,
-            number04: 62,
-            number05: 64,
-            powerNumber: 17
+            number01: 7,
+            number02: 15,
+            number03: 39,
+            number04: 40,
+            number05: 57,
+            powerNumber: 11
         };
-        const multiplier = 3;
+        const multiplier = 2;
         const grandPrizeAmount = 0;
         const ownerWinnings = await AddPowerBallDrawing(
             drawingDate,
