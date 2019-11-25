@@ -6,29 +6,34 @@ import * as moment from 'moment';
 import { powerballDrawing } from './interfaces/powerballDrawing';
 import { drawingNumber } from './interfaces/drawingNumber';
 import { dateTimeFormat, dateFormat } from './helpers/dateFormat';
+import { powerballReport, powerballReportNumber, ticketWinningReport } from './interfaces/powerballReport';
 
 export type recordDrawingFunc = (drawing: powerballDrawing) => Promise<void>;
 export type getDrawingNumbersFunc = (drawingDate: Date) => Promise<Array<drawingNumber>>;
 export type recordWinningsFunc = (winning: ownerWinning) => Promise<void>;
+export type getTicketWinningsFunc = (ticketId: string) => Promise<number>;
+export type getLotteryReturnOnInvestmentFunc = () => Promise<number>;
 
 export async function AddPowerBallDrawing(
         drawingDate: Date,
-        number: powerballNumber,
+        drawingNumber: powerballNumber,
         multiplier: number,
         grandPrizeAmount: number,
         getDrawingNumbersFunc: getDrawingNumbersFunc | null = getDrawingNumbers,
+        getTicketWinningsFunc: getTicketWinningsFunc | null = getTicketWinnings,
+        getLotteryReturnOnInvestmentFunc: getLotteryReturnOnInvestmentFunc | null = getLotteryReturnOnInvestment,
         recordDrawingFunc: recordDrawingFunc | null = recordDrawing,
-        recordWinningsFunc: recordWinningsFunc | null = recordWinnings) : Promise<Array<ownerWinning>> {
+        recordWinningsFunc: recordWinningsFunc | null = recordWinnings) : Promise<powerballReport> {
     const currentDate = new Date();
 
     const powerballDrawing: powerballDrawing = {
         drawingDate: drawingDate,
-        number01: number.number01,
-        number02: number.number02,
-        number03: number.number03,
-        number04: number.number04,
-        number05: number.number05,
-        powerNumber: number.powerNumber,
+        number01: drawingNumber.number01,
+        number02: drawingNumber.number02,
+        number03: drawingNumber.number03,
+        number04: drawingNumber.number04,
+        number05: drawingNumber.number05,
+        powerNumber: drawingNumber.powerNumber,
         createDate: currentDate,
         updateDate: currentDate
     }
@@ -36,37 +41,141 @@ export async function AddPowerBallDrawing(
         await recordDrawingFunc(powerballDrawing);
     }
 
-    let ownerWinnings: Array<ownerWinning> = [];
+    let powerballReport: powerballReport = {
+        drawingNumber: drawingNumber,
+        ticketWinningReports: [],
+        lotteryReturnOnInvestment: 0
+    };
     
     if (getDrawingNumbersFunc) {
         const drawingNumbers = await getDrawingNumbersFunc(drawingDate);
-        drawingNumbers.map(async (drawingNumber: drawingNumber) => {
-            let matchCount = 0;
-            if (getMatch(drawingNumber.number01, number)) {
-                matchCount++;
-            }
-            const winningAmount = getWinningAmount(matchCount,
-                drawingNumber.powerNumber === number.powerNumber,
-                drawingNumber.powerPlay ? multiplier : 1,
-                grandPrizeAmount);
-
-            const ownerWinning: ownerWinning = {
-                ticketId: drawingNumber.ticketId,
-                drawingDate: drawingDate,
-                amount: winningAmount,
-                createDate: currentDate,
-                updateDate: currentDate
-            }
-            if (!ownerWinnings.includes(ownerWinning)) {
-                ownerWinnings.push(ownerWinning);
-            }
-
-            if (recordWinningsFunc) {
-                await recordWinningsFunc(ownerWinning);
-            }
-        });
+        Array.from(new Set(drawingNumbers.map((ticketNumber: drawingNumber) => ticketNumber.ticketId)))
+            .map(async (currentTicketId: string) => {
+                let ticketWinningReport: ticketWinningReport = {
+                    ticketId: currentTicketId,
+                    numbers: [],
+                    drawingWinningAmount: 0,
+                    ticketWinningAmount: 0
+                }
+                drawingNumbers.filter((ticketNumber: drawingNumber) => ticketNumber.ticketId === currentTicketId)
+                    .map(async (ticketNumber: drawingNumber) => {
+                        const matchCount: number = getMatchCount(ticketNumber, drawingNumber);
+                        const powerballMatch: boolean = ticketNumber.powerNumber === drawingNumber.powerNumber;
+                        const winningAmount: number = getWinningAmount(matchCount,
+                            powerballMatch,
+                            ticketNumber.powerPlay ? multiplier : 1,
+                            grandPrizeAmount);
+            
+                        const ownerWinning: ownerWinning = {
+                            ticketId: ticketNumber.ticketId,
+                            drawingDate: drawingDate,
+                            amount: winningAmount,
+                            createDate: currentDate,
+                            updateDate: currentDate
+                        }
+                        
+                        const powerballReportNumber: powerballReportNumber = {
+                            ...ticketNumber,
+                            matchCount: matchCount,
+                            powerballMatch: powerballMatch
+                        };
+                        ticketWinningReport.numbers.push(powerballReportNumber);
+                        ticketWinningReport.drawingWinningAmount += winningAmount;
+            
+                        if (recordWinningsFunc) {
+                            await recordWinningsFunc(ownerWinning);
+                        }
+                    });
+                if (getTicketWinningsFunc) {
+                    ticketWinningReport.ticketWinningAmount = await getTicketWinningsFunc(currentTicketId);
+                }
+                powerballReport.ticketWinningReports.push(ticketWinningReport);
+            });
     }
-    return ownerWinnings;
+    if (getLotteryReturnOnInvestmentFunc) {
+        powerballReport.lotteryReturnOnInvestment = await getLotteryReturnOnInvestmentFunc();
+    }
+    return powerballReport;
+}
+
+async function getTicketWinnings(ticketId: string): Promise<number> {
+    const client = new Client(postgresConfig);
+
+    let ticketWinningAmount: number = 0;
+
+    try {
+        await client.connect();
+
+        // Get all tickets that have a drawing date that matches the drawing date
+        const ticketQuery =
+              'SELECT '
+            + ' SUM(amount) TicketWinningAmount '
+            + 'FROM OwnerWinning '
+            + `WHERE TicketId = '${ticketId}'`;
+        
+        const stream = client.query(ticketQuery);
+        for await (const dataRow of stream) {
+            ticketWinningAmount += Number(dataRow.get('TicketWinningAmount')) || 0;
+        }
+    } catch (e) {
+        console.log('Error encountered while processing data:', e)
+    } finally {
+        if (!client.closed) {
+            await client.end();
+        }
+    }
+
+    return ticketWinningAmount;
+}
+
+async function getLotteryReturnOnInvestment(): Promise<number> {
+    const client = new Client(postgresConfig);
+
+    let lotteryReturnOnInvestment: number = 0;
+
+    try {
+        await client.connect();
+
+        // Get all tickets that have a drawing date that matches the drawing date
+        const ticketQuery =
+              'SELECT '
+            + ' SUM(COALESCE(amount, 0)) - SUM(COALESCE(cost, 0))) LotteryReturnOnInvestment '
+            + 'FROM PowerballTicket pt '
+            + ' LEFT JOIN OwnerWinning ow ON pt.TicketId = ow.TicketId '
+        
+        const stream = client.query(ticketQuery);
+        for await (const dataRow of stream) {
+            lotteryReturnOnInvestment += Number(dataRow.get('LotteryReturnOnInvestment')) || 0;
+        }
+    } catch (e) {
+        console.log('Error encountered while processing data:', e)
+    } finally {
+        if (!client.closed) {
+            await client.end();
+        }
+    }
+
+    return lotteryReturnOnInvestment;
+}
+
+function getMatchCount(ticketNumber: drawingNumber, drawingNumber: powerballNumber): number {
+    let matchCount = 0;
+    if (getMatch(drawingNumber.number01, ticketNumber)) {
+        matchCount++;
+    }
+    if (getMatch(drawingNumber.number02, ticketNumber)) {
+        matchCount++;
+    }
+    if (getMatch(drawingNumber.number03, ticketNumber)) {
+        matchCount++;
+    }
+    if (getMatch(drawingNumber.number04, ticketNumber)) {
+        matchCount++;
+    }
+    if (getMatch(drawingNumber.number05, ticketNumber)) {
+        matchCount++;
+    }
+    return matchCount;
 }
 
 function getMatch(checkNumber: number, drawingNumber: powerballNumber): boolean {
