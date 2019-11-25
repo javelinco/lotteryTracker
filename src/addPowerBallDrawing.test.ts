@@ -88,15 +88,15 @@ describe('Add Powerball Drawing', () => {
     it('Should record real drawing', async () => {
         const drawingDate = new Date('11/6/2019');
         const number: powerballNumber = {
-            number01: 1,
-            number02: 2,
-            number03: 3,
-            number04: 4,
-            number05: 5,
-            powerNumber: 6
+            number01: 15,
+            number02: 28,
+            number03: 46,
+            number04: 62,
+            number05: 64,
+            powerNumber: 17
         };
         const multiplier = 2;
-        const grandPrizeAmount = 0;
+        const grandPrizeAmount = 1000000;
         const powerballReport: powerballReport = await AddPowerBallDrawing(
             drawingDate,
             number,
@@ -115,6 +115,7 @@ describe('Add Powerball Drawing', () => {
         });
 
         let reportOutput: string = 'PowerballReport: \n';
+        reportOutput = `${reportOutput}Drawing Numbers: {${powerballReport.drawingNumber.number01}, ${powerballReport.drawingNumber.number02}, ${powerballReport.drawingNumber.number03}, ${powerballReport.drawingNumber.number04}, ${powerballReport.drawingNumber.number05}, ${powerballReport.drawingNumber.powerNumber}}\n`;
         powerballReport.ticketWinningReports.map(report => {
             reportOutput = `${reportOutput}TicketId: ${report.ticketId}\n`;
             report.numbers.map(number => {

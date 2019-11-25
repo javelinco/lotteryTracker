@@ -139,7 +139,7 @@ async function getLotteryReturnOnInvestment(): Promise<number> {
         // Get all tickets that have a drawing date that matches the drawing date
         const ticketQuery =
               'SELECT '
-            + ' SUM(COALESCE(amount, 0)) - SUM(COALESCE(cost, 0))) LotteryReturnOnInvestment '
+            + ' SUM(COALESCE(amount, 0)) - SUM(COALESCE(cost, 0)) LotteryReturnOnInvestment '
             + 'FROM PowerballTicket pt '
             + ' LEFT JOIN OwnerWinning ow ON pt.TicketId = ow.TicketId '
         
@@ -307,7 +307,7 @@ async function recordWinnings(winning: ownerWinning): Promise<void> {
             + `'${moment(winning.createDate).format(dateTimeFormat)}', `
             + `'${moment(winning.updateDate).format(dateTimeFormat)}') `
             + 'ON CONFLICT (TicketId, DrawingDate) DO UPDATE '
-            + `SET Amount = ${winning.amount} + COALESCE (Amount, 0), `
+            + `SET Amount = ${winning.amount} + COALESCE (OwnerWinning.Amount, 0), `
             + `    UpdateDate = '${moment(winning.updateDate).format(dateTimeFormat)}'`;
         await client.query(ownerWinningQuery);
     } catch (e) {
