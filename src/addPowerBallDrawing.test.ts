@@ -86,14 +86,14 @@ describe('Add Powerball Drawing', () => {
     });
 
     it('Should record real drawing', async () => {
-        const drawingDate = new Date('11/6/2019');
+        const drawingDate = new Date('12/28/2019');
         const number: powerballNumber = {
-            number01: 15,
-            number02: 28,
-            number03: 46,
-            number04: 62,
-            number05: 64,
-            powerNumber: 17
+            number01: 20,
+            number02: 23,
+            number03: 39,
+            number04: 59,
+            number05: 60,
+            powerNumber: 18
         };
         const multiplier = 2;
         const grandPrizeAmount = 1000000;
