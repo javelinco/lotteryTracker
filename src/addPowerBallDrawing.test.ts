@@ -11,6 +11,7 @@ let drawingNumbers: Array<drawingNumber> = [];
 let drawingNumber: powerballNumber;
 
 async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber>> {
+    console.trace(drawingDate);
     return drawingNumbers;
 }
 
