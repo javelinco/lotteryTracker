@@ -47,17 +47,6 @@ const powerballNumbers: Array<powerballNumber> = [
 ];
 
 describe('Add Powerball Ticket', () => {
-    it('Add real ticket', async () => {
-        const numbers: Array<powerballNumber> = [
-            { number01: 14, number02: 25, number03: 51, number04: 52, number05: 63, powerNumber: 21 },
-            { number01: 4, number02: 28, number03: 34, number04: 56, number05: 61, powerNumber: 8 },
-            { number01: 19, number02: 28, number03: 46, number04: 63, number05: 64, powerNumber: 4 },
-            { number01: 26, number02: 27, number03: 38, number04: 46, number05: 47, powerNumber: 3 },
-            { number01: 6, number02: 21, number03: 46, number04: 56, number05: 61, powerNumber: 5 }
-        ]
-        await AddPowerballTicket(new Date('12/14/2019'), true, numbers, 5, null);
-    }, 10000000);
-
     it('Should be golden path', async () => {
         const purchaseDate = new Date('11/9/2019');
         const cost = 75;

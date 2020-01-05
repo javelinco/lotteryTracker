@@ -85,49 +85,6 @@ describe('Add Powerball Drawing', () => {
             + expectedTicketWinnings.reduce((sum, winning) => sum + winning.winnings, 0);
     });
 
-    it('Should record real drawing', async () => {
-        const drawingDate = new Date('12/28/2019');
-        const number: powerballNumber = {
-            number01: 20,
-            number02: 23,
-            number03: 39,
-            number04: 59,
-            number05: 60,
-            powerNumber: 18
-        };
-        const multiplier = 2;
-        const grandPrizeAmount = 1000000;
-        const powerballReport: powerballReport = await AddPowerBallDrawing(
-            drawingDate,
-            number,
-            multiplier,
-            grandPrizeAmount,
-            getDrawingNumbers,
-            getTicketWinnings,
-            getLotteryReturnOnInvestment,
-            null,
-            null
-        );
-
-        var formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        });
-
-        let reportOutput: string = 'PowerballReport: \n';
-        reportOutput = `${reportOutput}Drawing Numbers: {${powerballReport.drawingNumber.number01}, ${powerballReport.drawingNumber.number02}, ${powerballReport.drawingNumber.number03}, ${powerballReport.drawingNumber.number04}, ${powerballReport.drawingNumber.number05}, ${powerballReport.drawingNumber.powerNumber}}\n`;
-        powerballReport.ticketWinningReports.map(report => {
-            reportOutput = `${reportOutput}TicketId: ${report.ticketId}\n`;
-            report.numbers.map(number => {
-                reportOutput = `${reportOutput}Set {${number.number01}, ${number.number02}, ${number.number03}, ${number.number04}, ${number.number05}, ${number.powerNumber}} : ${number.matchCount} matches, ${number.powerballMatch ? '' : 'no'} powerball\n`;
-            });
-            reportOutput = `${reportOutput}Drawing Winnings: ${formatter.format(report.drawingWinningAmount)}\n`;
-            reportOutput = `${reportOutput}Ticket Winnings: ${formatter.format(report.ticketWinningAmount)}\n`;
-        });
-        reportOutput = `${reportOutput}Lottery ROI: ${formatter.format(powerballReport.lotteryReturnOnInvestment)}`;
-        console.log(reportOutput);
-    });
-
     it('Should report single win with PowerNumber match only', async () => {
         const drawingDate = new Date('11/16/2019');
         const multiplier = 2;

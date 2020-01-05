@@ -9,7 +9,21 @@ export default class Api {
   public static async start(): Promise<Hapi.Server> {
       try {
           const serverConfig: Hapi.ServerOptions = {
-              port: process.env.SERVICE_PORT || 3050
+              port: process.env.SERVICE_PORT || 3050,
+              routes: {
+                  validate: {
+                    failAction: async (_, _1, err) => {
+                        if (process.env.NODE_ENV === 'production' && err) {
+                            // In prod, log a limited error message and throw the default Bad Request error.
+                            Logger.instance.error({ type: 'ValidationError', message: err.message });
+                            throw Boom.badRequest(`Invalid request payload input`);
+                        } else {
+                            // During development respond with the full error.
+                            throw err;
+                        }
+                    }
+                  }
+              }
           };
 
           Api._instance = new Hapi.Server(serverConfig);
