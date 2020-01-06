@@ -1,5 +1,15 @@
-### Lottery Tracker
+# Lottery Tracker
 The lottery tracking allows the user to input the tickets they have purchased, and track the drawings that occur. For each ticket valid for a drawing, the winnings and ROI will be tracked.
+
+## Docker:
+### To Build the Image for Development:
+    npm run build:dev
+
+### To Publish the Image:
+    npm run publish:dev
+
+### To Run the Image Locally:
+    docker run --env-file .env -v src:/app/ -p 3050:3050 mmunson/lottery-tracker
 
 ## Database Schema
 The following describes the database schema.

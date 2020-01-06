@@ -13,6 +13,8 @@
     "start": "ts-node src/index.ts",
     "start:inspect": "node --expose-gc --inspect=0.0.0.0:9229 -r ts-node/register src/index.ts",
     "start:dev": "nodemon --ignore files/ --watch . --exec ts-node src/index.ts",
+    "build:dev": "docker build -f Dockerfile.dev -t mmunson/lottery-tracker .",
+    "publish:dev": "docker login && docker tag mmunson/lottery-tracker mmunson/lottery-tracker:latest && docker push mmunson/lottery-tracker:latest",
     "compile": "rimraf dist/ && tsc -p .",
     "lint": "tslint -c tslint.json -p tsconfig.json src/**/*.ts",
     "lint:circle": "npm run lint > lintOutput.txt",
