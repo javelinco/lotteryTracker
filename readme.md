@@ -9,7 +9,7 @@ The lottery tracking allows the user to input the tickets they have purchased, a
     npm run publish:dev
 
 ### To Run the Image Locally:
-    docker run --env-file .env -v src:/app/ -p 3050:3050 --name lottery-tracker mmunson/lottery-tracker
+    docker run --env-file .env -v src:/app/ -p 3060:3050 --name lottery-tracker -d mmunson/lottery-tracker
 
 ### To See the logs from Docker container:
     docker logs lottery-tracker
