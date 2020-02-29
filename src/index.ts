@@ -10,11 +10,11 @@ dotenv.config();
 
 (async () => {
   try {
-      Logger.instantiate();
-      await api.start();
+    Logger.instantiate();
+    await api.start();
   } catch (error) {
-      Logger.instance.error('Server crashed', error);
-      process.exit(1);
+    Logger.instance.error('Server crashed', error);
+    process.exit(1);
   }
 })().catch(console.error);
 // (async event => {
@@ -26,16 +26,16 @@ dotenv.config();
 
 //     if (event) {
 //       const request = TransformLambdaRequest(<lambdaEvent><unknown>event);
-      
+
 //       // handle cors here if needed
 //       if (!request.headers) {
 //         request.headers = {}
 //       }
 //       request.headers['Access-Control-Allow-Origin'] = '*';
 //       request.headers['Access-Control-Allow-Credentials'] = 'true';
-    
+
 //       const response = await server.inject(request);
-    
+
 //       return TransformLambdaResponse(response);
 //     }
 //   } catch (error) {
