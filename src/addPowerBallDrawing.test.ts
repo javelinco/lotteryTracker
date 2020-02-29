@@ -1,3 +1,7 @@
+/**
+ * @group unit
+ */
+
 import { AddPowerBallDrawing } from "./addPowerBallDrawing";
 import { drawingNumber } from "./interfaces/drawingNumber";
 import { powerballNumber } from "./interfaces/powerballNumber";
