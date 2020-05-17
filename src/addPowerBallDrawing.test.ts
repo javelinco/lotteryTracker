@@ -1,11 +1,7 @@
-/**
- * @group unit
- */
-
 import { AddPowerBallDrawing } from './addPowerBallDrawing';
 import { drawingNumber } from './interfaces/drawingNumber';
 import { powerballNumber } from './interfaces/powerballNumber';
-import uuid = require('uuid');
+import { v4 as uuid } from 'uuid';
 import { powerballReport, ticketWinningReport, powerballReportNumber } from './interfaces/powerballReport';
 
 let expectedTicketWinnings: Array<{ ticketId: string; winnings: number; matchCount: number; powerballMatch: boolean }> = [];
@@ -20,7 +16,7 @@ async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber
 }
 
 async function getTicketWinnings(ticketId: string): Promise<number> {
-  return expectedTicketWinnings.filter(ticket => ticket.ticketId === ticketId)[0].winnings;
+  return expectedTicketWinnings.filter((ticket) => ticket.ticketId === ticketId)[0].winnings;
 }
 
 async function getLotteryReturnOnInvestment(): Promise<number> {
@@ -40,7 +36,7 @@ describe('Add Powerball Drawing', () => {
         number04: 10,
         number05: 11,
         powerNumber: 6,
-        powerPlay: true
+        powerPlay: true,
       },
       {
         ticketId: ticketIds[1],
@@ -50,7 +46,7 @@ describe('Add Powerball Drawing', () => {
         number04: 15,
         number05: 16,
         powerNumber: 17,
-        powerPlay: true
+        powerPlay: true,
       },
       {
         ticketId: ticketIds[2],
@@ -60,7 +56,7 @@ describe('Add Powerball Drawing', () => {
         number04: 21,
         number05: 22,
         powerNumber: 23,
-        powerPlay: false
+        powerPlay: false,
       },
       {
         ticketId: ticketIds[0],
@@ -70,8 +66,8 @@ describe('Add Powerball Drawing', () => {
         number04: 27,
         number05: 28,
         powerNumber: 29,
-        powerPlay: true
-      }
+        powerPlay: true,
+      },
     ];
     drawingNumber = {
       number01: 1,
@@ -79,12 +75,12 @@ describe('Add Powerball Drawing', () => {
       number03: 3,
       number04: 4,
       number05: 5,
-      powerNumber: 6
+      powerNumber: 6,
     };
     expectedTicketWinnings = [
       { ticketId: ticketIds[0], winnings: 8, matchCount: 1, powerballMatch: true },
       { ticketId: ticketIds[1], winnings: 0, matchCount: 0, powerballMatch: false },
-      { ticketId: ticketIds[2], winnings: 0, matchCount: 0, powerballMatch: false }
+      { ticketId: ticketIds[2], winnings: 0, matchCount: 0, powerballMatch: false },
     ];
     expectedLotteryReturnOnInvestment = -75 + expectedTicketWinnings.reduce((sum, winning) => sum + winning.winnings, 0);
   });
@@ -111,12 +107,12 @@ describe('Add Powerball Drawing', () => {
     expect(powerballReport.ticketWinningReports.length).toBe(ticketIds.length);
     ticketIds.map((ticketId: string) => {
       const ticketWinningReports: Array<ticketWinningReport> = powerballReport.ticketWinningReports.filter(
-        report => report.ticketId === ticketId
+        (report) => report.ticketId === ticketId
       );
-      const expectedTicketWinning = expectedTicketWinnings.filter(ticket => ticket.ticketId === ticketId)[0];
+      const expectedTicketWinning = expectedTicketWinnings.filter((ticket) => ticket.ticketId === ticketId)[0];
       expect(ticketWinningReports.length).toBe(1);
       expect(ticketWinningReports[0].drawingWinningAmount).toBe(expectedTicketWinning.winnings);
-      expect(ticketWinningReports[0].numbers.length).toBe(drawingNumbers.filter(number => number.ticketId == ticketId).length);
+      expect(ticketWinningReports[0].numbers.length).toBe(drawingNumbers.filter((number) => number.ticketId == ticketId).length);
       ticketWinningReports[0].numbers.map((number: powerballReportNumber) => {
         if (number.number01 === 24) {
           expect(number.matchCount).toBe(0);

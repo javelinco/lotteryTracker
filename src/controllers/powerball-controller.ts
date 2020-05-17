@@ -15,13 +15,11 @@ export class PowerballController implements Controller {
 
   @options({
     tags: ['api'],
-    description: 'Adds a new Powerball ticket'
+    description: 'Adds a new Powerball ticket',
   })
   @validate({
     payload: Joi.object().keys({
-      purchaseDate: Joi.date()
-        .required()
-        .description('Date of ticket purchased. Used to calculate drawing dates.'),
+      purchaseDate: Joi.date().required().description('Date of ticket purchased. Used to calculate drawing dates.'),
       powerPlay: Joi.boolean()
         .required()
         .description('Whether or not PowerPlay was purchased. Used to calculate winnings when drawings are entered against the ticket.'),
@@ -30,8 +28,8 @@ export class PowerballController implements Controller {
         .required()
         .description(
           'The number of drawings purchased for the ticket. Used to determine, with the purchase date, the drawing dates for the ticket.'
-        )
-    })
+        ),
+    }),
   })
   @post('/ticket')
   public async ticket(request: HapiRequest): Promise<OsResponse<powerballTicketPurchase>> {
@@ -45,18 +43,14 @@ export class PowerballController implements Controller {
 
   @options({
     tags: ['api'],
-    description: 'Adds a new Powerball drawing'
+    description: 'Adds a new Powerball drawing',
   })
   @validate({
     payload: Joi.object().keys({
-      drawingDate: Joi.date()
-        .required()
-        .description('Date of drawing. Used to calculate ticket winnings for the drawing.'),
+      drawingDate: Joi.date().required().description('Date of drawing. Used to calculate ticket winnings for the drawing.'),
       drawingNumber: powerballNumberValidator.schema,
-      multiplier: Joi.number()
-        .required()
-        .description('The winning multipler. Used to calculate ticket winnings for the drawing.')
-    })
+      multiplier: Joi.number().required().description('The winning multipler. Used to calculate ticket winnings for the drawing.'),
+    }),
   })
   @put('/drawing')
   public async drawing(request: HapiRequest): Promise<OsResponse<powerballReport>> {
