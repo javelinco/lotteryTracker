@@ -1,4 +1,4 @@
-import * as Boom from '@hapi/boom';
+import { Boom } from '@hapi/boom';
 import * as Hapi from '@hapi/hapi';
 
 export type OsResponse<T> = T | Boom<null>;

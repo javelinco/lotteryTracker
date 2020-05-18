@@ -1,7 +1,3 @@
-/**
- * @group unit
- */
-
 import { AddPowerballTicket } from './addPowerBallTicket';
 import { powerballNumber } from './interfaces/powerballNumber';
 import { powerballTicketNumber } from './interfaces/powerballTicketNumber';
@@ -14,7 +10,7 @@ const powerballNumbers: Array<powerballNumber> = [
     number03: 3,
     number04: 4,
     number05: 5,
-    powerNumber: 6
+    powerNumber: 6,
   },
   {
     number01: 7,
@@ -22,7 +18,7 @@ const powerballNumbers: Array<powerballNumber> = [
     number03: 9,
     number04: 10,
     number05: 11,
-    powerNumber: 12
+    powerNumber: 12,
   },
   {
     number01: 13,
@@ -30,7 +26,7 @@ const powerballNumbers: Array<powerballNumber> = [
     number03: 15,
     number04: 16,
     number05: 17,
-    powerNumber: 18
+    powerNumber: 18,
   },
   {
     number01: 19,
@@ -38,7 +34,7 @@ const powerballNumbers: Array<powerballNumber> = [
     number03: 21,
     number04: 22,
     number05: 23,
-    powerNumber: 24
+    powerNumber: 24,
   },
   {
     number01: 25,
@@ -46,8 +42,8 @@ const powerballNumbers: Array<powerballNumber> = [
     number03: 27,
     number04: 28,
     number05: 29,
-    powerNumber: 30
-  }
+    powerNumber: 30,
+  },
 ];
 
 describe('Add Powerball Ticket', () => {
@@ -87,7 +83,7 @@ describe('Add Powerball Ticket', () => {
       new Date('11/13/2019'),
       new Date('11/16/2019'),
       new Date('11/20/2019'),
-      new Date('11/23/2019')
+      new Date('11/23/2019'),
     ];
     expect(
       powerballTicketPurchase.drawings.map((drawing: powerballTicketDrawing) => {

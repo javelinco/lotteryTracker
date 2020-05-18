@@ -7,6 +7,7 @@ import { powerballDrawing } from './interfaces/powerballDrawing';
 import { drawingNumber } from './interfaces/drawingNumber';
 import { dateTimeFormat, dateFormat } from './helpers/dateFormat';
 import { powerballReport, powerballReportNumber, ticketWinningReport } from './interfaces/powerballReport';
+import Logger from '../lib/helpers/logger';
 
 export type recordDrawingFunc = (drawing: powerballDrawing) => Promise<void>;
 export type getDrawingNumbersFunc = (drawingDate: Date) => Promise<Array<drawingNumber>>;
@@ -117,7 +118,7 @@ async function getTicketWinnings(ticketId: string): Promise<number> {
       ticketWinningAmount += Number(dataRow.get('TicketWinningAmount')) || 0;
     }
   } catch (e) {
-    console.log('Error encountered while processing data:', e);
+    Logger.instance.error('Error encountered while processing data:', e);
   } finally {
     if (!client.closed) {
       await client.end();
@@ -147,7 +148,7 @@ async function getLotteryReturnOnInvestment(): Promise<number> {
       lotteryReturnOnInvestment += Number(dataRow.get('LotteryReturnOnInvestment')) || 0;
     }
   } catch (e) {
-    console.log('Error encountered while processing data:', e);
+    Logger.instance.error('Error encountered while processing data:', e);
   } finally {
     if (!client.closed) {
       await client.end();
@@ -241,7 +242,7 @@ async function recordDrawing(drawing: powerballDrawing): Promise<void> {
       ` UpdateDate = '${moment(drawing.updateDate).format(dateTimeFormat)}'`;
     await client.query(powerballDrawingQuery);
   } catch (e) {
-    console.log('Error encountered while processing data:', e);
+    Logger.instance.error('Error encountered while processing data:', e);
   } finally {
     if (!client.closed) {
       await client.end();
@@ -280,7 +281,7 @@ async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber
       drawingNumbers.push(number);
     }
   } catch (e) {
-    console.log('Error encountered while processing data:', e);
+    Logger.instance.error('Error encountered while processing data:', e);
   } finally {
     if (!client.closed) {
       await client.end();
@@ -310,7 +311,7 @@ async function recordWinnings(winning: ownerWinning): Promise<void> {
       `    UpdateDate = '${moment(winning.updateDate).format(dateTimeFormat)}'`;
     await client.query(ownerWinningQuery);
   } catch (e) {
-    console.log('Error encountered while processing data:', e);
+    Logger.instance.error('Error encountered while processing data:', e);
   } finally {
     if (!client.closed) {
       await client.end();

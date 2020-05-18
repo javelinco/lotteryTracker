@@ -1,5 +1,5 @@
 import * as Hapi from '@hapi/hapi';
-import * as Boom from '@hapi/boom';
+import { badRequest, Boom } from '@hapi/boom';
 import Logger from './helpers/logger';
 import Router from './router';
 
@@ -16,7 +16,7 @@ export default class Api {
               if (process.env.NODE_ENV === 'production' && err) {
                 // In prod, log a limited error message and throw the default Bad Request error.
                 Logger.instance.error({ type: 'ValidationError', message: err.message });
-                throw Boom.badRequest(`Invalid request payload input`);
+                throw badRequest(`Invalid request payload input`);
               } else {
                 // During development respond with the full error.
                 throw err;
