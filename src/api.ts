@@ -1,5 +1,5 @@
 import * as Hapi from '@hapi/hapi';
-import { Boom, badRequest } from '@hapi/boom';
+import { badRequest, Boom } from '@hapi/boom';
 import Logger from './helpers/logger';
 import Router from './router';
 
@@ -21,9 +21,9 @@ export default class Api {
                 // During development respond with the full error.
                 throw err;
               }
-            },
-          },
-        },
+            }
+          }
+        }
       };
 
       Api._instance = new Hapi.Server(serverConfig);
@@ -56,7 +56,7 @@ export default class Api {
       message: boomError.message,
       statusCode: boomError.output.statusCode,
       name: boomError.name,
-      stacktrace: boomError.stack,
+      stacktrace: boomError.stack
     });
     return h.continue;
   }
