@@ -8,6 +8,7 @@ import { powerballTicketDrawing } from './interfaces/powerballTicketDrawing';
 import { postgresConfig } from './configuration/postgressConfig';
 import * as moment from 'moment';
 import { dateTimeFormat, dateFormat } from './helpers/dateFormat';
+import Logger from './helpers/logger';
 
 export type databaseSaveFunc = (purchase: powerballTicketPurchase) => Promise<void>;
 
@@ -137,7 +138,7 @@ async function recordPurchase(purchase: powerballTicketPurchase): Promise<void> 
       await client.query(powerballTicketDrawingQuery);
     });
   } catch (e) {
-    console.log('Error encountered while inserting data:', e);
+    Logger.instance.error('Error encountered while inserting data:', e);
   } finally {
     if (!client.closed) {
       await client.end();
