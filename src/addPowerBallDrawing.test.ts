@@ -7,6 +7,7 @@ import { drawingNumber } from './interfaces/drawingNumber';
 import { powerballNumber } from './interfaces/powerballNumber';
 import uuid = require('uuid');
 import { powerballReport, ticketWinningReport, powerballReportNumber } from './interfaces/powerballReport';
+import Logger from './helpers/logger';
 
 let expectedTicketWinnings: Array<{ ticketId: string; winnings: number; matchCount: number; powerballMatch: boolean }> = [];
 let expectedLotteryReturnOnInvestment: number = 0;
@@ -15,7 +16,7 @@ let drawingNumbers: Array<drawingNumber> = [];
 let drawingNumber: powerballNumber;
 
 async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber>> {
-  console.trace(drawingDate);
+  Logger.instance.debug(drawingDate);
   return drawingNumbers;
 }
 
