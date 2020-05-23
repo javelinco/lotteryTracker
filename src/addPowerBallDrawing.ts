@@ -8,6 +8,7 @@ import { drawingNumber } from './interfaces/drawingNumber';
 import { dateTimeFormat, dateFormat } from './helpers/dateFormat';
 import { powerballReport, powerballReportNumber, ticketWinningReport } from './interfaces/powerballReport';
 import Logger from './helpers/logger';
+import { PowerballDrawingRepository } from './repositories/powerball-drawing';
 
 export type recordDrawingFunc = (drawing: powerballDrawing) => Promise<void>;
 export type getDrawingNumbersFunc = (drawingDate: Date) => Promise<Array<drawingNumber>>;
@@ -214,40 +215,7 @@ function getWinningAmount(matchCount: number, powerNumberMatch: boolean, multipl
 }
 
 async function recordDrawing(drawing: powerballDrawing): Promise<void> {
-  const client = new Client(postgresConfig);
-
-  try {
-    await client.connect();
-
-    const powerballDrawingQuery =
-      'INSERT INTO PowerballDrawing ' +
-      '(DrawingDate, Number01, Number02, Number03, Number04, Number05, PowerNumber, CreateDate, UpdateDate) ' +
-      'VALUES ( ' +
-      `'${moment(drawing.drawingDate).format(dateFormat)}', ` +
-      `${drawing.number01}, ` +
-      `${drawing.number02}, ` +
-      `${drawing.number03}, ` +
-      `${drawing.number04}, ` +
-      `${drawing.number05}, ` +
-      `${drawing.powerNumber}, ` +
-      `'${moment(drawing.createDate).format(dateTimeFormat)}', ` +
-      `'${moment(drawing.updateDate).format(dateTimeFormat)}') ` +
-      'ON CONFLICT (drawingDate) DO UPDATE ' +
-      `SET Number01 = ${drawing.number01}, ` +
-      ` Number02 = ${drawing.number02}, ` +
-      ` Number03 = ${drawing.number03}, ` +
-      ` Number04 = ${drawing.number04}, ` +
-      ` Number05 = ${drawing.number05}, ` +
-      ` PowerNumber = ${drawing.powerNumber}, ` +
-      ` UpdateDate = '${moment(drawing.updateDate).format(dateTimeFormat)}'`;
-    await client.query(powerballDrawingQuery);
-  } catch (e) {
-    Logger.instance.error('Error encountered while processing data:', e);
-  } finally {
-    if (!client.closed) {
-      await client.end();
-    }
-  }
+  await new PowerballDrawingRepository().Save(drawing);
 }
 
 async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber>> {

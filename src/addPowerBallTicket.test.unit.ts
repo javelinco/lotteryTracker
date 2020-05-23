@@ -1,7 +1,3 @@
-/**
- * @group unit
- */
-
 import { AddPowerballTicket } from './addPowerBallTicket';
 import { powerballNumber } from './interfaces/powerballNumber';
 import { powerballTicketNumber } from './interfaces/powerballTicketNumber';

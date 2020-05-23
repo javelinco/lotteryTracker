@@ -2,6 +2,7 @@ import * as Hapi from '@hapi/hapi';
 import * as Boom from '@hapi/boom';
 import Logger from './helpers/logger';
 import Router from './router';
+import { DbConnection } from './db-connection';
 
 export default class Api {
   private static _instance: Hapi.Server;
@@ -39,7 +40,9 @@ export default class Api {
     }
   }
 
-  public static async stop(): Promise<void> {}
+  public static async stop(): Promise<void> {
+    DbConnection.closeConnection();
+  }
 
   public static get instance(): Hapi.Server {
     return Api._instance;
