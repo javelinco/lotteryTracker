@@ -12,16 +12,24 @@ export interface PowerballDrawingEntry {
 
 const powerballUrl = 'https://powerball.com/api/v1/numbers/powerball?_format=json';
 
-export async function GetPowerballDrawingsSince(beginDate: Date): Promise<Array<powerballDrawing>> {
+export type getPowerballDrawingFromApiFunc = (url: string) => Promise<Array<PowerballDrawingEntry>>;
+
+async function getPowerballDrawingFromApi(url: string): Promise<Array<PowerballDrawingEntry>> {
   axios.defaults.adapter = require('axios/lib/adapters/http');
-  let drawings: Array<PowerballDrawingEntry> = [];
   try {
-    const url = `${powerballUrl}&min=${moment(beginDate).format(dateFormat)}%2000:00:00&max=${moment().format(dateFormat)}%2023:59:59`;
-    drawings = (await axios.get(url)).data;
+    return (await axios.get(url)).data;
   } catch (error) {
     Logger.instance.error(error);
+    throw error;
   }
-  return Convert(drawings);
+}
+
+export async function GetPowerballDrawingsSince(
+  beginDate: Date,
+  getPowerballDrawingFromApiFunc: getPowerballDrawingFromApiFunc = getPowerballDrawingFromApi
+): Promise<Array<powerballDrawing>> {
+  const url = `${powerballUrl}&min=${moment(beginDate).format(dateFormat)}%2000:00:00&max=${moment().format(dateFormat)}%2023:59:59`;
+  return Convert(await getPowerballDrawingFromApiFunc(url));
 }
 
 function Convert(powerballDrawingEntries: Array<PowerballDrawingEntry>): Array<powerballDrawing> {
