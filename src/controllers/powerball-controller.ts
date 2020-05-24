@@ -1,12 +1,12 @@
 import { Controller, controller, post, put, validate, options } from 'hapi-decorators';
 import * as Hapi from '@hapi/hapi';
-import { powerballTicketPurchase } from '../interfaces/powerballTicketPurchase';
+import { PowerballTicketPurchase } from '../interfaces/powerball-ticket-purchase';
 import { OsResponse, HapiRequest } from '../interfaces/hapi-request';
 import Joi = require('@hapi/joi');
-import { powerballNumberValidator } from '../validators/powerballNumberValidator';
-import { AddPowerballTicket } from '../addPowerBallTicket';
-import { AddPowerBallDrawing } from '../addPowerBallDrawing';
-import { powerballReport } from '../interfaces/powerballReport';
+import { PowerballNumberValidator } from '../validators/powerball-number';
+import { addPowerballTicket } from '../add-powerball-ticket';
+import { addPowerBallDrawing } from '../add-powerball-drawing';
+import { PowerballReport } from '../interfaces/powerball-report';
 
 @controller('/v1/powerball')
 export class PowerballController implements Controller {
@@ -25,7 +25,7 @@ export class PowerballController implements Controller {
       powerPlay: Joi.boolean()
         .required()
         .description('Whether or not PowerPlay was purchased. Used to calculate winnings when drawings are entered against the ticket.'),
-      numbers: Joi.array().items(powerballNumberValidator.schema),
+      numbers: Joi.array().items(PowerballNumberValidator.schema),
       drawings: Joi.number()
         .required()
         .description(
@@ -34,8 +34,8 @@ export class PowerballController implements Controller {
     })
   })
   @post('/ticket')
-  public async ticket(request: HapiRequest): Promise<OsResponse<powerballTicketPurchase>> {
-    return await AddPowerballTicket(
+  public async ticket(request: HapiRequest): Promise<OsResponse<PowerballTicketPurchase>> {
+    return await addPowerballTicket(
       request.payload.purchaseDate,
       request.payload.powerPlay,
       request.payload.numbers,
@@ -52,15 +52,15 @@ export class PowerballController implements Controller {
       drawingDate: Joi.date()
         .required()
         .description('Date of drawing. Used to calculate ticket winnings for the drawing.'),
-      drawingNumber: powerballNumberValidator.schema,
+      drawingNumber: PowerballNumberValidator.schema,
       multiplier: Joi.number()
         .required()
         .description('The winning multipler. Used to calculate ticket winnings for the drawing.')
     })
   })
   @put('/drawing')
-  public async drawing(request: HapiRequest): Promise<OsResponse<powerballReport>> {
-    return await AddPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
+  public async drawing(request: HapiRequest): Promise<OsResponse<PowerballReport>> {
+    return await addPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
   }
 
   @options({
@@ -68,7 +68,7 @@ export class PowerballController implements Controller {
     description: 'Checks for new Powerball winnings'
   })
   @put('/drawing/winnings')
-  public async newWinnings(request: HapiRequest): Promise<OsResponse<powerballReport>> {
-    return await AddPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
+  public async newWinnings(request: HapiRequest): Promise<OsResponse<PowerballReport>> {
+    return await addPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
   }
 }

@@ -1,7 +1,7 @@
-import { powerballTicket } from '../interfaces/powerballticket';
+import { PowerballTicket } from '../interfaces/powerball-ticket';
 import { v4 as uuidv4 } from 'uuid';
 
-export function CreateTicket(ticketId: string, ownerId: string = uuidv4()): powerballTicket {
+export function createTicket(ticketId: string, ownerId: string = uuidv4()): PowerballTicket {
   return {
     ticketId: ticketId,
     purchaseDate: new Date('1/1/2000'),

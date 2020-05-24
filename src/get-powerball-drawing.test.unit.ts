@@ -1,10 +1,10 @@
-import { GetPowerballDrawingsSince } from './getPowerballDrawing';
+import { getPowerballDrawingsSince } from './get-powerball-drawing';
 import Logger from './helpers/logger';
 import * as moment from 'moment';
 
 describe('Powerball Drawing', () => {
   it('Should get latest drawing', async () => {
-    const drawings = await GetPowerballDrawingsSince(
+    const drawings = await getPowerballDrawingsSince(
       moment()
         .add(-7, 'd')
         .toDate()

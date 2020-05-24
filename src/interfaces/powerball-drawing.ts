@@ -1,4 +1,4 @@
-export interface powerballDrawing {
+export interface PowerballDrawing {
   drawingDate: Date;
   number01: number;
   number02: number;

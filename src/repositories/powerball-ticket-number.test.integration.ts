@@ -1,9 +1,9 @@
 import { PowerballTicketNumberRepository } from './powerball-ticket-number';
 import * as dotenv from 'dotenv';
 import { createConnection, getConnection } from 'typeorm';
-import { powerballTicketNumber } from '../interfaces/powerballticketnumber';
+import { PowerballTicketNumber } from '../interfaces/powerball-ticket-number';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateTicket } from '../helpers/test-powerball-ticket';
+import { createTicket } from '../helpers/test-powerball-ticket';
 import { PowerballTicketRepository } from './powerball-ticket';
 import { TypeOrmHelpers } from '../helpers/orm-helpers';
 
@@ -12,9 +12,9 @@ describe('Integration - PowerballTicketNumber CRUD Operations', () => {
   const powerballTicketRepository = new PowerballTicketRepository();
 
   const ownerId = uuidv4();
-  const testTicket = CreateTicket(uuidv4(), ownerId);
+  const testTicket = createTicket(uuidv4(), ownerId);
 
-  const testPowerballTicketNumber: powerballTicketNumber = {
+  const testPowerballTicketNumber: PowerballTicketNumber = {
     ticketNumberId: uuidv4(),
     ticketId: testTicket.ticketId,
     number01: 1,
@@ -30,20 +30,20 @@ describe('Integration - PowerballTicketNumber CRUD Operations', () => {
   beforeAll(async () => {
     dotenv.config();
 
-    await createConnection(TypeOrmHelpers.GetTypeOrmConnectionOptions());
+    await createConnection(TypeOrmHelpers.getTypeOrmConnectionOptions());
 
-    await powerballTicketRepository.Save(testTicket);
+    await powerballTicketRepository.save(testTicket);
   });
 
   afterAll(async () => {
-    await powerballTicketRepository.Delete(testTicket.ticketId);
-    getConnection().close();
+    await powerballTicketRepository.delete(testTicket.ticketId);
+    await getConnection().close();
   });
 
   it('Should Save, Load and Delete', async () => {
-    const saved = await powerballTicketNumberRepository.Save(testPowerballTicketNumber);
-    const loaded = await powerballTicketNumberRepository.Load(testPowerballTicketNumber.ticketId);
-    const deleted = await powerballTicketNumberRepository.Delete(testPowerballTicketNumber.ticketId);
+    const saved = await powerballTicketNumberRepository.save(testPowerballTicketNumber);
+    const loaded = await powerballTicketNumberRepository.load(testPowerballTicketNumber.ticketId);
+    const deleted = await powerballTicketNumberRepository.delete(testPowerballTicketNumber.ticketId);
 
     expect(saved).toEqual(testPowerballTicketNumber);
     expect(loaded).toEqual([testPowerballTicketNumber]);

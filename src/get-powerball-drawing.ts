@@ -1,12 +1,15 @@
 import axios from 'axios';
 import * as moment from 'moment';
-import { dateFormat } from './helpers/dateFormat';
+import { dateFormat } from './helpers/date-format';
 import Logger from './helpers/logger';
-import { powerballDrawing } from './interfaces/powerballDrawing';
+import { PowerballDrawing } from './interfaces/powerball-drawing';
 
 export interface PowerballDrawingEntry {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   field_winning_numbers: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   field_multiplier: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   field_draw_date: Date;
 }
 
@@ -24,19 +27,19 @@ async function getPowerballDrawingFromApi(url: string): Promise<Array<PowerballD
   }
 }
 
-export async function GetPowerballDrawingsSince(
+export async function getPowerballDrawingsSince(
   beginDate: Date,
   getPowerballDrawingFromApiFunc: getPowerballDrawingFromApiFunc = getPowerballDrawingFromApi
-): Promise<Array<powerballDrawing>> {
+): Promise<Array<PowerballDrawing>> {
   const url = `${powerballUrl}&min=${moment(beginDate).format(dateFormat)}%2000:00:00&max=${moment().format(dateFormat)}%2023:59:59`;
-  return Convert(await getPowerballDrawingFromApiFunc(url));
+  return convert(await getPowerballDrawingFromApiFunc(url));
 }
 
-function Convert(powerballDrawingEntries: Array<PowerballDrawingEntry>): Array<powerballDrawing> {
-  let powerballDrawings: Array<powerballDrawing> = [];
-  for (let powerballDrawingEntry of powerballDrawingEntries) {
-    let powerballNumbers = powerballDrawingEntry.field_winning_numbers.split(',');
-    let powerballDrawing: powerballDrawing = {
+function convert(powerballDrawingEntries: Array<PowerballDrawingEntry>): Array<PowerballDrawing> {
+  const powerballDrawings: Array<PowerballDrawing> = [];
+  for (const powerballDrawingEntry of powerballDrawingEntries) {
+    const powerballNumbers = powerballDrawingEntry.field_winning_numbers.split(',');
+    const powerballDrawing: PowerballDrawing = {
       drawingDate: moment(powerballDrawingEntry.field_draw_date).toDate(),
       number01: +powerballNumbers[0],
       number02: +powerballNumbers[1],

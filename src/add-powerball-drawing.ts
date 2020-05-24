@@ -1,24 +1,24 @@
-import { powerballNumber } from './interfaces/powerballNumber';
-import { ownerWinning } from './interfaces/ownerWinning';
+import { PowerballNumber } from './interfaces/powerball-number';
+import { OwnerWinning } from './interfaces/owner-winning';
 import { Client } from 'ts-postgres';
-import { postgresConfig } from './configuration/postgressConfig';
+import { postgresConfig } from './configuration/postgress-config';
 import * as moment from 'moment';
-import { powerballDrawing } from './interfaces/powerballDrawing';
-import { drawingNumber } from './interfaces/drawingNumber';
-import { dateTimeFormat, dateFormat } from './helpers/dateFormat';
-import { powerballReport, powerballReportNumber, ticketWinningReport } from './interfaces/powerballReport';
+import { PowerballDrawing } from './interfaces/powerball-drawing';
+import { DrawingNumber } from './interfaces/drawing-number';
+import { dateTimeFormat, dateFormat } from './helpers/date-format';
+import { PowerballReport, PowerballReportNumber, TicketWinningReport } from './interfaces/powerball-report';
 import Logger from './helpers/logger';
 import { PowerballDrawingRepository } from './repositories/powerball-drawing';
 
-export type recordDrawingFunc = (drawing: powerballDrawing) => Promise<void>;
-export type getDrawingNumbersFunc = (drawingDate: Date) => Promise<Array<drawingNumber>>;
-export type recordWinningsFunc = (winning: ownerWinning) => Promise<void>;
+export type recordDrawingFunc = (drawing: PowerballDrawing) => Promise<void>;
+export type getDrawingNumbersFunc = (drawingDate: Date) => Promise<Array<DrawingNumber>>;
+export type recordWinningsFunc = (winning: OwnerWinning) => Promise<void>;
 export type getTicketWinningsFunc = (ticketId: string) => Promise<number>;
 export type getLotteryReturnOnInvestmentFunc = () => Promise<number>;
 
-export async function AddPowerBallDrawing(
+export async function addPowerBallDrawing(
   drawingDate: Date,
-  drawingNumber: powerballNumber,
+  drawingNumber: PowerballNumber,
   multiplier: number,
   grandPrizeAmount: number,
   getDrawingNumbersFunc: getDrawingNumbersFunc | null = getDrawingNumbers,
@@ -26,10 +26,10 @@ export async function AddPowerBallDrawing(
   getLotteryReturnOnInvestmentFunc: getLotteryReturnOnInvestmentFunc | null = getLotteryReturnOnInvestment,
   recordDrawingFunc: recordDrawingFunc | null = recordDrawing,
   recordWinningsFunc: recordWinningsFunc | null = recordWinnings
-): Promise<powerballReport> {
+): Promise<PowerballReport> {
   const currentDate = new Date();
 
-  const powerballDrawing: powerballDrawing = {
+  const powerballDrawing: PowerballDrawing = {
     drawingDate: drawingDate,
     number01: drawingNumber.number01,
     number02: drawingNumber.number02,
@@ -44,7 +44,7 @@ export async function AddPowerBallDrawing(
     await recordDrawingFunc(powerballDrawing);
   }
 
-  let powerballReport: powerballReport = {
+  const powerballReportItem: PowerballReport = {
     drawingNumber: drawingNumber,
     ticketWinningReports: [],
     lotteryReturnOnInvestment: 0
@@ -52,16 +52,16 @@ export async function AddPowerBallDrawing(
 
   if (getDrawingNumbersFunc) {
     const drawingNumbers = await getDrawingNumbersFunc(drawingDate);
-    Array.from(new Set(drawingNumbers.map((ticketNumber: drawingNumber) => ticketNumber.ticketId))).map(async (currentTicketId: string) => {
-      let ticketWinningReport: ticketWinningReport = {
+    Array.from(new Set(drawingNumbers.map((ticketNumber: DrawingNumber) => ticketNumber.ticketId))).map(async (currentTicketId: string) => {
+      const ticketWinningReportItem: TicketWinningReport = {
         ticketId: currentTicketId,
         numbers: [],
         drawingWinningAmount: 0,
         ticketWinningAmount: 0
       };
       drawingNumbers
-        .filter((ticketNumber: drawingNumber) => ticketNumber.ticketId === currentTicketId)
-        .map(async (ticketNumber: drawingNumber) => {
+        .filter((ticketNumber: DrawingNumber) => ticketNumber.ticketId === currentTicketId)
+        .map(async (ticketNumber: DrawingNumber) => {
           const matchCount: number = getMatchCount(ticketNumber, drawingNumber);
           const powerballMatch: boolean = ticketNumber.powerNumber === drawingNumber.powerNumber;
           const winningAmount: number = getWinningAmount(
@@ -71,7 +71,7 @@ export async function AddPowerBallDrawing(
             grandPrizeAmount
           );
 
-          const ownerWinning: ownerWinning = {
+          const ownerWinning: OwnerWinning = {
             ticketId: ticketNumber.ticketId,
             drawingDate: drawingDate,
             amount: winningAmount,
@@ -79,28 +79,28 @@ export async function AddPowerBallDrawing(
             updateDate: currentDate
           };
 
-          const powerballReportNumber: powerballReportNumber = {
+          const powerballReportNumberItem: PowerballReportNumber = {
             ...ticketNumber,
             matchCount: matchCount,
             powerballMatch: powerballMatch
           };
-          ticketWinningReport.numbers.push(powerballReportNumber);
-          ticketWinningReport.drawingWinningAmount += winningAmount;
+          ticketWinningReportItem.numbers.push(powerballReportNumberItem);
+          ticketWinningReportItem.drawingWinningAmount += winningAmount;
 
           if (recordWinningsFunc) {
             await recordWinningsFunc(ownerWinning);
           }
         });
       if (getTicketWinningsFunc) {
-        ticketWinningReport.ticketWinningAmount = await getTicketWinningsFunc(currentTicketId);
+        ticketWinningReportItem.ticketWinningAmount = await getTicketWinningsFunc(currentTicketId);
       }
-      powerballReport.ticketWinningReports.push(ticketWinningReport);
+      powerballReportItem.ticketWinningReports.push(ticketWinningReportItem);
     });
   }
   if (getLotteryReturnOnInvestmentFunc) {
-    powerballReport.lotteryReturnOnInvestment = await getLotteryReturnOnInvestmentFunc();
+    powerballReportItem.lotteryReturnOnInvestment = await getLotteryReturnOnInvestmentFunc();
   }
-  return powerballReport;
+  return powerballReportItem;
 }
 
 async function getTicketWinnings(ticketId: string): Promise<number> {
@@ -159,7 +159,7 @@ async function getLotteryReturnOnInvestment(): Promise<number> {
   return lotteryReturnOnInvestment;
 }
 
-function getMatchCount(ticketNumber: drawingNumber, drawingNumber: powerballNumber): number {
+function getMatchCount(ticketNumber: DrawingNumber, drawingNumber: PowerballNumber): number {
   let matchCount = 0;
   if (getMatch(drawingNumber.number01, ticketNumber)) {
     matchCount++;
@@ -179,7 +179,7 @@ function getMatchCount(ticketNumber: drawingNumber, drawingNumber: powerballNumb
   return matchCount;
 }
 
-function getMatch(checkNumber: number, drawingNumber: powerballNumber): boolean {
+function getMatch(checkNumber: number, drawingNumber: PowerballNumber): boolean {
   return (
     checkNumber === drawingNumber.number01 ||
     checkNumber === drawingNumber.number02 ||
@@ -214,14 +214,14 @@ function getWinningAmount(matchCount: number, powerNumberMatch: boolean, multipl
   return 0;
 }
 
-async function recordDrawing(drawing: powerballDrawing): Promise<void> {
-  await new PowerballDrawingRepository().Save(drawing);
+async function recordDrawing(drawing: PowerballDrawing): Promise<void> {
+  await new PowerballDrawingRepository().save(drawing);
 }
 
-async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber>> {
+async function getDrawingNumbers(drawingDate: Date): Promise<Array<DrawingNumber>> {
   const client = new Client(postgresConfig);
 
-  let drawingNumbers: Array<drawingNumber> = [];
+  const drawingNumbers: Array<DrawingNumber> = [];
 
   try {
     await client.connect();
@@ -236,7 +236,7 @@ async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber
 
     const stream = client.query(ticketQuery);
     for await (const dataRow of stream) {
-      const number: drawingNumber = {
+      const number: DrawingNumber = {
         ticketId: `${dataRow.get('ticketid')}`,
         number01: Number(dataRow.get('number01')) || 0,
         number02: Number(dataRow.get('number02')) || 0,
@@ -259,7 +259,7 @@ async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber
   return drawingNumbers;
 }
 
-async function recordWinnings(winning: ownerWinning): Promise<void> {
+async function recordWinnings(winning: OwnerWinning): Promise<void> {
   const client = new Client(postgresConfig);
 
   try {

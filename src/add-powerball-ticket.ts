@@ -1,27 +1,27 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Client } from 'ts-postgres';
-import { powerballNumber } from './interfaces/powerballNumber';
-import { powerballTicket } from './interfaces/powerballTicket';
-import { powerballTicketNumber } from './interfaces/powerballTicketNumber';
-import { powerballTicketPurchase } from './interfaces/powerballTicketPurchase';
-import { powerballTicketDrawing } from './interfaces/powerballTicketDrawing';
-import { postgresConfig } from './configuration/postgressConfig';
+import { PowerballNumber } from './interfaces/powerball-number';
+import { PowerballTicket } from './interfaces/powerball-ticket';
+import { PowerballTicketNumber } from './interfaces/powerball-ticket-number';
+import { PowerballTicketPurchase } from './interfaces/powerball-ticket-purchase';
+import { PowerballTicketDrawing } from './interfaces/powerball-ticket-drawing';
+import { postgresConfig } from './configuration/postgress-config';
 import * as moment from 'moment';
-import { dateTimeFormat, dateFormat } from './helpers/dateFormat';
+import { dateTimeFormat, dateFormat } from './helpers/date-format';
 import Logger from './helpers/logger';
 
-export type databaseSaveFunc = (purchase: powerballTicketPurchase) => Promise<void>;
+export type databaseSaveFunc = (purchase: PowerballTicketPurchase) => Promise<void>;
 
-export async function AddPowerballTicket(
+export async function addPowerballTicket(
   purchaseDate: Date,
   powerPlay: boolean,
-  numbers: Array<powerballNumber>,
+  numbers: Array<PowerballNumber>,
   drawings: number,
   databaseSave: databaseSaveFunc | null = recordPurchase
-): Promise<powerballTicketPurchase> {
+): Promise<PowerballTicketPurchase> {
   const currentDate = new Date();
 
-  const powerballTicket: powerballTicket = {
+  const powerballTicketItem: PowerballTicket = {
     ticketId: uuidv4(),
     purchaseDate: purchaseDate,
     cost: numbers.length * drawings * (powerPlay ? 3 : 2),
@@ -30,10 +30,10 @@ export async function AddPowerballTicket(
     updateDate: currentDate
   };
 
-  const powerballNumbers: Array<powerballTicketNumber> = numbers.map((number: powerballNumber) => {
+  const powerballNumbers: Array<PowerballTicketNumber> = numbers.map((number: PowerballNumber) => {
     return {
       ticketNumberId: uuidv4(),
-      ticketId: powerballTicket.ticketId,
+      ticketId: powerballTicketItem.ticketId,
       number01: number.number01,
       number02: number.number02,
       number03: number.number03,
@@ -45,10 +45,10 @@ export async function AddPowerballTicket(
     };
   });
 
-  const powerballTicketDrawings: Array<powerballTicketDrawing> = getPowerballDrawingDates(purchaseDate, drawings).map(
+  const powerballTicketDrawings: Array<PowerballTicketDrawing> = getPowerballDrawingDates(purchaseDate, drawings).map(
     (drawingDate: Date) => {
       return {
-        ticketId: powerballTicket.ticketId,
+        ticketId: powerballTicketItem.ticketId,
         drawingDate: drawingDate,
         createDate: currentDate,
         updateDate: currentDate
@@ -56,8 +56,8 @@ export async function AddPowerballTicket(
     }
   );
 
-  const powerballTicketPurchase: powerballTicketPurchase = {
-    ticket: powerballTicket,
+  const powerballTicketPurchase: PowerballTicketPurchase = {
+    ticket: powerballTicketItem,
     numbers: powerballNumbers,
     drawings: powerballTicketDrawings
   };
@@ -69,30 +69,28 @@ export async function AddPowerballTicket(
   return powerballTicketPurchase;
 }
 
-async function recordPurchase(purchase: powerballTicketPurchase): Promise<void> {
+async function recordPurchase(purchase: PowerballTicketPurchase): Promise<void> {
   const client = new Client(postgresConfig);
   try {
     await client.connect();
 
     //PowerballTicket
     const powerballTicketQuery =
-      'INSERT INTO PowerballTicket ' +
-      '(TicketId, PurchaseDate, Cost, PowerPlay, OwnerId, CreateDate, UpdateDate) ' +
-      'VALUES ( ' +
-      `'${purchase.ticket.ticketId}', ` +
-      `'${moment(purchase.ticket.purchaseDate).format(dateFormat)}', ` +
-      `${purchase.ticket.cost}, ` +
-      `${purchase.ticket.powerPlay}, ` +
-      (purchase.ticket.ownerId === undefined ? 'NULL, ' : `'${purchase.ticket.ownerId}', `) +
-      `'${moment(purchase.ticket.createDate).format(dateTimeFormat)}' ,` +
+      `${'INSERT INTO PowerballTicket ' +
+        '(TicketId, PurchaseDate, Cost, PowerPlay, OwnerId, CreateDate, UpdateDate) ' +
+        'VALUES ( ' +
+        `'${purchase.ticket.ticketId}', ` +
+        `'${moment(purchase.ticket.purchaseDate).format(dateFormat)}', ` +
+        `${purchase.ticket.cost}, ` +
+        `${purchase.ticket.powerPlay}, `}${purchase.ticket.ownerId === undefined ? 'NULL, ' : `'${purchase.ticket.ownerId}', `}'${moment(
+        purchase.ticket.createDate
+      ).format(dateTimeFormat)}' ,` +
       `'${moment(purchase.ticket.updateDate).format(dateTimeFormat)}') ` +
-      'ON CONFLICT (TicketId) DO UPDATE ' +
+      `ON CONFLICT (TicketId) DO UPDATE ` +
       `SET PurchaseDate = '${moment(purchase.ticket.purchaseDate).format(dateFormat)}', ` +
       ` Cost = ${purchase.ticket.cost}, ` +
       ` PowerPlay = ${purchase.ticket.powerPlay}, ` +
-      ' OwnerId = ' +
-      (purchase.ticket.ownerId === undefined ? 'NULL' : `'${purchase.ticket.ownerId}'`) +
-      ', ' +
+      ` OwnerId = ${purchase.ticket.ownerId === undefined ? 'NULL' : `'${purchase.ticket.ownerId}'`}, ` +
       ` UpdateDate = '${moment(purchase.ticket.updateDate).format(dateTimeFormat)}'`;
     await client.query(powerballTicketQuery);
 
@@ -151,10 +149,10 @@ function getPowerballDrawingDates(purchaseDate: Date, drawings: number): Array<D
   const saturdayDayOfWeek = 6;
   const lengthOfWeek = 7;
 
-  let referenceDate = new Date(purchaseDate);
+  const referenceDate = new Date(purchaseDate);
   referenceDate.setHours(0, 0, 0, 0);
 
-  let drawingDates: Array<Date> = [];
+  const drawingDates: Array<Date> = [];
 
   for (let index = 0; index < drawings; index++) {
     const nextWednesday: Date = new Date(referenceDate);

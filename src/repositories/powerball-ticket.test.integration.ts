@@ -1,30 +1,30 @@
 import * as dotenv from 'dotenv';
 import { PowerballTicketRepository } from './powerball-ticket';
-import { powerballTicket } from '../interfaces/powerballTicket';
+import { PowerballTicket } from '../interfaces/powerball-ticket';
 import { v4 as uuidv4 } from 'uuid';
 import { createConnection, getConnection } from 'typeorm';
 import { TypeOrmHelpers } from '../helpers/orm-helpers';
-import { CreateTicket } from '../helpers/test-powerball-ticket';
+import { createTicket } from '../helpers/test-powerball-ticket';
 
 describe('Integration - PowerballTicket CRUD Operations', () => {
   const powerballTicketRepository = new PowerballTicketRepository();
 
-  let powerballTicket: powerballTicket = CreateTicket(uuidv4(), uuidv4());
+  const powerballTicket: PowerballTicket = createTicket(uuidv4(), uuidv4());
 
   beforeAll(async () => {
     dotenv.config();
 
-    await createConnection(TypeOrmHelpers.GetTypeOrmConnectionOptions());
+    await createConnection(TypeOrmHelpers.getTypeOrmConnectionOptions());
   });
 
   afterAll(async () => {
-    getConnection().close();
+    await getConnection().close();
   });
 
   it('Should Save, Load and Delete', async () => {
-    const saved = await powerballTicketRepository.Save(powerballTicket);
-    const loaded = await powerballTicketRepository.Load(powerballTicket.ticketId);
-    const deleted = await powerballTicketRepository.Delete(powerballTicket.ticketId);
+    const saved = await powerballTicketRepository.save(powerballTicket);
+    const loaded = await powerballTicketRepository.load(powerballTicket.ticketId);
+    const deleted = await powerballTicketRepository.delete(powerballTicket.ticketId);
 
     expect(saved).toEqual(powerballTicket);
     expect(loaded).toEqual(powerballTicket);

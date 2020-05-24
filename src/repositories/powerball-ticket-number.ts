@@ -1,32 +1,32 @@
 import { getConnection, Entity, PrimaryColumn, Column } from 'typeorm';
-import { powerballTicketNumber } from '../interfaces/powerballticketnumber';
+import { PowerballTicketNumber } from '../interfaces/powerball-ticket-number';
 
 @Entity({ name: 'powerballticketnumber' })
 export class PowerballTicketNumberEntity {
   @PrimaryColumn('uuid', { name: 'ticketnumberid' })
-  ticketNumberId!: string;
+  public ticketNumberId!: string;
   @Column({ name: 'ticketid' })
-  ticketId!: string;
+  public ticketId!: string;
   @Column({ name: 'number01' })
-  number01!: number;
+  public number01!: number;
   @Column({ name: 'number02' })
-  number02!: number;
+  public number02!: number;
   @Column({ name: 'number03' })
-  number03!: number;
+  public number03!: number;
   @Column({ name: 'number04' })
-  number04!: number;
+  public number04!: number;
   @Column({ name: 'number05' })
-  number05!: number;
+  public number05!: number;
   @Column({ name: 'powernumber' })
-  powerNumber!: number;
+  public powerNumber!: number;
   @Column('timestamp', { name: 'createdate' })
-  createDate!: Date;
+  public createDate!: Date;
   @Column('timestamp', { name: 'updatedate' })
-  updateDate!: Date;
+  public updateDate!: Date;
 }
 
 export class PowerballTicketNumberRepository {
-  public async Delete(ticketId: string): Promise<boolean> {
+  public async delete(ticketId: string): Promise<boolean> {
     const deleteResult = await getConnection()
       .createQueryBuilder()
       .delete()
@@ -36,7 +36,7 @@ export class PowerballTicketNumberRepository {
     return deleteResult.affected !== undefined && deleteResult.affected !== null && deleteResult.affected > 0;
   }
 
-  public async Load(ticketId: string): Promise<powerballTicketNumber[] | null> {
+  public async load(ticketId: string): Promise<Array<PowerballTicketNumber> | null> {
     const powerballTicketRepository = getConnection().getRepository(PowerballTicketNumberEntity);
     const powerballTicketNumbers = await powerballTicketRepository.find({
       where: `ticketId = '${ticketId}'`
@@ -44,7 +44,7 @@ export class PowerballTicketNumberRepository {
     return powerballTicketNumbers !== undefined ? powerballTicketNumbers : null;
   }
 
-  public async Save(powerballTicketNumber: powerballTicketNumber): Promise<powerballTicketNumber | null> {
+  public async save(powerballTicketNumber: PowerballTicketNumber): Promise<PowerballTicketNumber | null> {
     const powerballTicketNumberRepository = getConnection().getRepository(PowerballTicketNumberEntity);
     const savedEntity = await powerballTicketNumberRepository.save(powerballTicketNumber);
 

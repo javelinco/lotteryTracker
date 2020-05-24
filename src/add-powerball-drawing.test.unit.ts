@@ -1,17 +1,17 @@
-import { AddPowerBallDrawing } from './addPowerBallDrawing';
-import { drawingNumber } from './interfaces/drawingNumber';
-import { powerballNumber } from './interfaces/powerballNumber';
+import { addPowerBallDrawing } from './add-powerball-drawing';
+import { DrawingNumber } from './interfaces/drawing-number';
+import { PowerballNumber } from './interfaces/powerball-number';
 import { v4 as uuidv4 } from 'uuid';
-import { powerballReport, ticketWinningReport, powerballReportNumber } from './interfaces/powerballReport';
+import { PowerballReport, TicketWinningReport, PowerballReportNumber } from './interfaces/powerball-report';
 import Logger from './helpers/logger';
 
 let expectedTicketWinnings: Array<{ ticketId: string; winnings: number; matchCount: number; powerballMatch: boolean }> = [];
 let expectedLotteryReturnOnInvestment: number = 0;
 let ticketIds: Array<string> = [];
-let drawingNumbers: Array<drawingNumber> = [];
-let drawingNumber: powerballNumber;
+let drawingNumbers: Array<DrawingNumber> = [];
+let drawingNumber: PowerballNumber;
 
-async function getDrawingNumbers(drawingDate: Date): Promise<Array<drawingNumber>> {
+async function getDrawingNumbers(drawingDate: Date): Promise<Array<DrawingNumber>> {
   Logger.instance.debug(drawingDate);
   return drawingNumbers;
 }
@@ -90,7 +90,7 @@ describe('Add Powerball Drawing', () => {
     const drawingDate = new Date('11/16/2019');
     const multiplier = 2;
     const grandPrizeAmount = 100000000;
-    const powerballReport: powerballReport = await AddPowerBallDrawing(
+    const powerballReportItem: PowerballReport = await addPowerBallDrawing(
       drawingDate,
       drawingNumber,
       multiplier,
@@ -102,19 +102,19 @@ describe('Add Powerball Drawing', () => {
       null
     );
 
-    expect(powerballReport).toBeTruthy();
-    expect(powerballReport.drawingNumber).toBe(drawingNumber);
-    expect(powerballReport.lotteryReturnOnInvestment).toBe(expectedLotteryReturnOnInvestment);
-    expect(powerballReport.ticketWinningReports.length).toBe(ticketIds.length);
+    expect(powerballReportItem).toBeTruthy();
+    expect(powerballReportItem.drawingNumber).toBe(drawingNumber);
+    expect(powerballReportItem.lotteryReturnOnInvestment).toBe(expectedLotteryReturnOnInvestment);
+    expect(powerballReportItem.ticketWinningReports.length).toBe(ticketIds.length);
     ticketIds.map((ticketId: string) => {
-      const ticketWinningReports: Array<ticketWinningReport> = powerballReport.ticketWinningReports.filter(
+      const ticketWinningReports: Array<TicketWinningReport> = powerballReportItem.ticketWinningReports.filter(
         report => report.ticketId === ticketId
       );
       const expectedTicketWinning = expectedTicketWinnings.filter(ticket => ticket.ticketId === ticketId)[0];
       expect(ticketWinningReports.length).toBe(1);
       expect(ticketWinningReports[0].drawingWinningAmount).toBe(expectedTicketWinning.winnings);
       expect(ticketWinningReports[0].numbers.length).toBe(drawingNumbers.filter(number => number.ticketId == ticketId).length);
-      ticketWinningReports[0].numbers.map((number: powerballReportNumber) => {
+      ticketWinningReports[0].numbers.map((number: PowerballReportNumber) => {
         if (number.number01 === 24) {
           expect(number.matchCount).toBe(0);
           expect(number.powerballMatch).toBe(false);

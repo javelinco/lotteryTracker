@@ -1,9 +1,9 @@
 import Joi = require('@hapi/joi');
-import { powerballNumber } from '../interfaces/powerballNumber';
-import { powerballNumberRange, powerballPowerNumberRange } from './sharedSchema';
+import { PowerballNumber } from '../interfaces/powerball-number';
+import { powerballNumberRange, powerballPowerNumberRange } from './shared-schema';
 
-export class powerballNumberValidator {
-  static schema = Joi.object({
+export class PowerballNumberValidator {
+  public static schema = Joi.object({
     number01: powerballNumberRange.required(),
     number02: powerballNumberRange.required(),
     number03: powerballNumberRange.required(),
@@ -12,7 +12,7 @@ export class powerballNumberValidator {
     powerNumber: powerballPowerNumberRange.required()
   });
 
-  public static async validate(powerballNumber: powerballNumber): Promise<Joi.ValidationResult> {
+  public static async validate(powerballNumber: PowerballNumber): Promise<Joi.ValidationResult> {
     return this.schema.validate(powerballNumber);
   }
 }

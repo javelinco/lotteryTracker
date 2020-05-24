@@ -1,4 +1,4 @@
-export interface powerballNumber {
+export interface PowerballNumber {
   number01: number;
   number02: number;
   number03: number;

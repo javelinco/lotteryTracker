@@ -1,22 +1,22 @@
 import { getConnection, Entity, PrimaryColumn, Column } from 'typeorm';
-import { powerballTicketDrawing } from '../interfaces/powerballticketdrawing';
+import { PowerballTicketDrawing } from '../interfaces/powerball-ticket-drawing';
 import * as moment from 'moment';
-import { dateTimeFormat } from '../helpers/dateFormat';
+import { dateTimeFormat } from '../helpers/date-format';
 
 @Entity({ name: 'powerballticketdrawing' })
 export class PowerballTicketDrawingEntity {
   @PrimaryColumn('uuid', { name: 'ticketid' })
-  ticketId!: string;
+  public ticketId!: string;
   @PrimaryColumn('timestamp', { name: 'drawingdate' })
-  drawingDate!: Date;
+  public drawingDate!: Date;
   @Column('timestamp', { name: 'createdate' })
-  createDate!: Date;
+  public createDate!: Date;
   @Column('timestamp', { name: 'updatedate' })
-  updateDate!: Date;
+  public updateDate!: Date;
 }
 
 export class PowerballTicketDrawingRepository {
-  public async Delete(ticketId: string, drawingDate: Date): Promise<boolean> {
+  public async delete(ticketId: string, drawingDate: Date): Promise<boolean> {
     const deleteResult = await getConnection()
       .createQueryBuilder()
       .delete()
@@ -27,7 +27,7 @@ export class PowerballTicketDrawingRepository {
     return deleteResult.affected !== undefined && deleteResult.affected !== null && deleteResult.affected > 0;
   }
 
-  public async Load(ticketId: string, drawingDate: Date): Promise<powerballTicketDrawing | null> {
+  public async load(ticketId: string, drawingDate: Date): Promise<PowerballTicketDrawing | null> {
     const powerballTicketDrawingRepository = getConnection().getRepository(PowerballTicketDrawingEntity);
     const powerballTicketDrawing = await powerballTicketDrawingRepository.findOne({
       where: `ticketId = '${ticketId}' AND drawingDate = '${moment(drawingDate).format(dateTimeFormat)}'`
@@ -35,7 +35,7 @@ export class PowerballTicketDrawingRepository {
     return powerballTicketDrawing !== undefined ? powerballTicketDrawing : null;
   }
 
-  public async Save(powerballTicketDrawing: powerballTicketDrawing): Promise<powerballTicketDrawing | null> {
+  public async save(powerballTicketDrawing: PowerballTicketDrawing): Promise<PowerballTicketDrawing | null> {
     const powerballTicketDrawingRepository = getConnection().getRepository(PowerballTicketDrawingEntity);
     const savedEntity = await powerballTicketDrawingRepository.save(powerballTicketDrawing);
 

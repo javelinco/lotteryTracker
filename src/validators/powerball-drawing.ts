@@ -1,9 +1,9 @@
 import Joi = require('@hapi/joi');
-import { powerballPowerNumberRange, powerballNumberRange } from './sharedSchema';
-import { powerballDrawing } from '../interfaces/powerballDrawing';
+import { powerballPowerNumberRange, powerballNumberRange } from './shared-schema';
+import { PowerballDrawing } from '../interfaces/powerball-drawing';
 
-export class powerballDrawingValidor {
-  public async validate(powerballDrawing: powerballDrawing): Promise<Joi.ValidationResult> {
+export class PowerballDrawingValidator {
+  public async validate(powerballDrawing: PowerballDrawing): Promise<Joi.ValidationResult> {
     const schema = Joi.object({
       drawingDate: Joi.date().required(),
       number01: powerballNumberRange.required(),

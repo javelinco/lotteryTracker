@@ -1,4 +1,4 @@
-export interface ownerWinning {
+export interface OwnerWinning {
   ticketId: string;
   drawingDate: Date;
   amount: number;

@@ -10,7 +10,7 @@ export default class Api {
 
   public static async start(): Promise<Hapi.Server> {
     try {
-      await createConnection(TypeOrmHelpers.GetTypeOrmConnectionOptions());
+      await createConnection(TypeOrmHelpers.getTypeOrmConnectionOptions());
 
       const serverConfig: Hapi.ServerOptions = {
         port: process.env.SERVICE_PORT || 3050,
@@ -44,7 +44,7 @@ export default class Api {
   }
 
   public static async stop(): Promise<void> {
-    getConnection().close();
+    await getConnection().close();
   }
 
   public static get instance(): Hapi.Server {

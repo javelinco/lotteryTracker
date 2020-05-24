@@ -1,4 +1,4 @@
-export interface powerballTicketDrawing {
+export interface PowerballTicketDrawing {
   ticketId: string;
   drawingDate: Date;
   createDate: Date;

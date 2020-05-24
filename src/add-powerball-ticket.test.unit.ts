@@ -1,9 +1,9 @@
-import { AddPowerballTicket } from './addPowerBallTicket';
-import { powerballNumber } from './interfaces/powerballNumber';
-import { powerballTicketNumber } from './interfaces/powerballTicketNumber';
-import { powerballTicketDrawing } from './interfaces/powerballTicketDrawing';
+import { addPowerballTicket } from './add-powerball-ticket';
+import { PowerballNumber } from './interfaces/powerball-number';
+import { PowerballTicketNumber } from './interfaces/powerball-ticket-number';
+import { PowerballTicketDrawing } from './interfaces/powerball-ticket-drawing';
 
-const powerballNumbers: Array<powerballNumber> = [
+const powerballNumbers: Array<PowerballNumber> = [
   {
     number01: 1,
     number02: 2,
@@ -51,7 +51,7 @@ describe('Add Powerball Ticket', () => {
     const purchaseDate = new Date('11/9/2019');
     const cost = 75;
     const powerplay = true;
-    const powerballTicketPurchase = await AddPowerballTicket(purchaseDate, powerplay, powerballNumbers, 5, null);
+    const powerballTicketPurchase = await addPowerballTicket(purchaseDate, powerplay, powerballNumbers, 5, null);
 
     //Check powerball ticket
     expect(powerballTicketPurchase.ticket.cost).toBe(cost);
@@ -65,12 +65,12 @@ describe('Add Powerball Ticket', () => {
     //Check powerball ticket numbers
     expect(powerballTicketPurchase.numbers).toEqual(
       expect.arrayContaining(
-        powerballNumbers.map((number: powerballNumber) => {
+        powerballNumbers.map((number: PowerballNumber) => {
           return expect.objectContaining(number);
         })
       )
     );
-    powerballTicketPurchase.numbers.forEach((number: powerballTicketNumber) => {
+    powerballTicketPurchase.numbers.forEach((number: PowerballTicketNumber) => {
       expect(number.ticketId).toBe(powerballTicketPurchase.ticket.ticketId);
       expect(number.ticketNumberId).toBeDefined();
       expect(number.createDate).toBe(powerballTicketPurchase.ticket.createDate);
@@ -86,11 +86,11 @@ describe('Add Powerball Ticket', () => {
       new Date('11/23/2019')
     ];
     expect(
-      powerballTicketPurchase.drawings.map((drawing: powerballTicketDrawing) => {
+      powerballTicketPurchase.drawings.map((drawing: PowerballTicketDrawing) => {
         return drawing.drawingDate;
       })
     ).toEqual(expectedDrawingDates);
-    powerballTicketPurchase.drawings.forEach((drawing: powerballTicketDrawing) => {
+    powerballTicketPurchase.drawings.forEach((drawing: PowerballTicketDrawing) => {
       expect(drawing.ticketId).toBe(powerballTicketPurchase.ticket.ticketId);
       expect(drawing.createDate).toBe(powerballTicketPurchase.ticket.createDate);
       expect(drawing.updateDate).toBe(powerballTicketPurchase.ticket.updateDate);

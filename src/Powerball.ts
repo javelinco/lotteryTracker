@@ -1,20 +1,20 @@
 import { PowerballDrawingRepository } from './repositories/powerball-drawing';
-import { GetPowerballDrawingsSince } from './getPowerballDrawing';
+import { getPowerballDrawingsSince } from './get-powerball-drawing';
 
 export class Powerball {
   private powerballDrawingRepository: PowerballDrawingRepository;
 
-  constructor(powerballDrawingRepository: PowerballDrawingRepository) {
+  public constructor(powerballDrawingRepository: PowerballDrawingRepository) {
     this.powerballDrawingRepository = powerballDrawingRepository;
   }
 
-  public async GetWinningsSinceLastDrawing(): Promise<void> {
-    const lastPowerballDrawing = await this.powerballDrawingRepository.GetLatest();
+  public async getWinningsSinceLastDrawing(): Promise<void> {
+    const lastPowerballDrawing = await this.powerballDrawingRepository.getLatest();
 
     if (lastPowerballDrawing) {
-      const powerballDrawings = await GetPowerballDrawingsSince(lastPowerballDrawing.drawingDate);
-      for (let powerballDrawing of powerballDrawings) {
-        await this.powerballDrawingRepository.Save(powerballDrawing);
+      const powerballDrawings = await getPowerballDrawingsSince(lastPowerballDrawing.drawingDate);
+      for (const powerballDrawing of powerballDrawings) {
+        await this.powerballDrawingRepository.save(powerballDrawing);
 
         // Get all tickets that have the same drawing date
 

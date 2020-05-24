@@ -8,28 +8,44 @@ import { PowerballTicketDrawingEntity } from '../repositories/powerball-ticket-d
 import { PowerballTicketNumberEntity } from '../repositories/powerball-ticket-number';
 
 class CustomOrmLogger implements TypeOrmLogger {
-  logQuery(query: string, parameters?: any[] | undefined, _queryRunner?: import('typeorm').QueryRunner | undefined) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public logQuery(query: string, parameters?: Array<any> | undefined, _queryRunner?: import('typeorm').QueryRunner | undefined) {
     Logger.instance.verbose({ query: query, parameters: parameters });
   }
-  logQueryError(error: string, query: string, parameters?: any[] | undefined, _queryRunner?: import('typeorm').QueryRunner | undefined) {
+  public logQueryError(
+    error: string,
+    query: string,
+    parameters?: Array<any> | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _queryRunner?: import('typeorm').QueryRunner | undefined
+  ) {
     Logger.instance.error({ error: error, query: query, parameters: parameters });
   }
-  logQuerySlow(time: number, query: string, parameters?: any[] | undefined, _queryRunner?: import('typeorm').QueryRunner | undefined) {
+  public logQuerySlow(
+    time: number,
+    query: string,
+    parameters?: Array<any> | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _queryRunner?: import('typeorm').QueryRunner | undefined
+  ) {
     Logger.instance.warn({ time: time, query: query, parameters: parameters });
   }
-  logSchemaBuild(message: string, _queryRunner?: import('typeorm').QueryRunner | undefined) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public logSchemaBuild(message: string, _queryRunner?: import('typeorm').QueryRunner | undefined) {
     Logger.instance.verbose({ message: message });
   }
-  logMigration(message: string, _queryRunner?: import('typeorm').QueryRunner | undefined) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public logMigration(message: string, _queryRunner?: import('typeorm').QueryRunner | undefined) {
     Logger.instance.verbose({ message: message });
   }
-  log(level: 'log' | 'info' | 'warn', message: any, _queryRunner?: import('typeorm').QueryRunner | undefined) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public log(level: 'log' | 'info' | 'warn', message: any, _queryRunner?: import('typeorm').QueryRunner | undefined) {
     Logger.instance.log(level, message);
   }
 }
 
 export class TypeOrmHelpers {
-  static GetTypeOrmConnectionOptions(): ConnectionOptions {
+  public static getTypeOrmConnectionOptions(): ConnectionOptions {
     dotenv.config();
 
     return {
