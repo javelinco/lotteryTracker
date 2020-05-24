@@ -1,4 +1,4 @@
-import { Powerball } from './Powerball';
+import { Powerball, TicketWinning, TicketNumberWinning } from './Powerball';
 import { mock, instance } from 'ts-mockito';
 import { PowerballDrawingRepository } from './repositories/powerball-drawing';
 import { PowerballTicketDrawingRepository } from './repositories/powerball-ticket-drawing';
@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { PowerballTicketNumber } from './interfaces/powerball-ticket-number';
 import { PowerballTicketRepository } from './repositories/powerball-ticket';
 import { PowerballTicket } from './interfaces/powerball-ticket';
-import Logger from './helpers/logger';
 
 describe('Unit - Powerball', () => {
   function createPowerballTicketNumber(ticketId: string, numbers: Array<number>): PowerballTicketNumber {
@@ -50,11 +49,11 @@ describe('Unit - Powerball', () => {
       updateDate: new Date('1/1/2000')
     };
     const powerballTicketNumbers: Array<PowerballTicketNumber> = [
-      createPowerballTicketNumber(powerballTicket.ticketId, [1, 2, 3, 4, 5, 6]),
-      createPowerballTicketNumber(powerballTicket.ticketId, [2, 3, 4, 5, 6, 7]),
-      createPowerballTicketNumber(powerballTicket.ticketId, [3, 4, 5, 6, 7, 8]),
-      createPowerballTicketNumber(powerballTicket.ticketId, [4, 5, 6, 7, 8, 9]),
-      createPowerballTicketNumber(powerballTicket.ticketId, [5, 6, 7, 8, 9, 10])
+      createPowerballTicketNumber(powerballTicket.ticketId, [1, 2, 3, 4, 5, 6]), // Grand Prize
+      createPowerballTicketNumber(powerballTicket.ticketId, [2, 3, 4, 5, 6, 7]), // 4 matches
+      createPowerballTicketNumber(powerballTicket.ticketId, [3, 4, 5, 6, 7, 8]), // 3 matches
+      createPowerballTicketNumber(powerballTicket.ticketId, [4, 5, 6, 7, 8, 9]), // 2 matches
+      createPowerballTicketNumber(powerballTicket.ticketId, [5, 6, 7, 8, 9, 10]) // 1 match
     ];
 
     //Given a powerball drawing
@@ -71,7 +70,7 @@ describe('Unit - Powerball', () => {
       updateDate: new Date('1/1/2000')
     };
     //When calculateWinning
-    powerball.calculateWinning(
+    const ticketWinning = powerball.calculateWinning(
       powerballTicket.ticketId,
       powerballTicket.powerPlay,
       powerballDrawing,
@@ -79,7 +78,51 @@ describe('Unit - Powerball', () => {
       Powerball.defaultGrandPrize
     );
     //Then TicketWinnings should be
-    const expectedWinnings = Powerball.defaultGrandPrize;
-    Logger.instance.info(`${expectedWinnings}`);
+    const expectedTicketNumberWinnings: Array<TicketNumberWinning> = [
+      {
+        powerballTicketNumber: powerballTicketNumbers[0],
+        matches: 5,
+        powerNumberMatch: true,
+        amount: powerball.calculatePrize(5, true, powerballTicket.powerPlay, powerballDrawing.multiplier, Powerball.defaultGrandPrize)
+      },
+      {
+        powerballTicketNumber: powerballTicketNumbers[1],
+        matches: 4,
+        powerNumberMatch: false,
+        amount: powerball.calculatePrize(4, false, powerballTicket.powerPlay, powerballDrawing.multiplier, Powerball.defaultGrandPrize)
+      },
+      {
+        powerballTicketNumber: powerballTicketNumbers[2],
+        matches: 3,
+        powerNumberMatch: false,
+        amount: powerball.calculatePrize(3, false, powerballTicket.powerPlay, powerballDrawing.multiplier, Powerball.defaultGrandPrize)
+      },
+      {
+        powerballTicketNumber: powerballTicketNumbers[3],
+        matches: 2,
+        powerNumberMatch: false,
+        amount: powerball.calculatePrize(2, false, powerballTicket.powerPlay, powerballDrawing.multiplier, Powerball.defaultGrandPrize)
+      },
+      {
+        powerballTicketNumber: powerballTicketNumbers[4],
+        matches: 1,
+        powerNumberMatch: false,
+        amount: powerball.calculatePrize(0, false, powerballTicket.powerPlay, powerballDrawing.multiplier, Powerball.defaultGrandPrize)
+      }
+    ];
+    const expectedTicketWinning: TicketWinning = {
+      ticketId: powerballTicket.ticketId,
+      drawingDate: powerballDrawing.drawingDate,
+      ticketNumberWinnings: expectedTicketNumberWinnings
+    };
+    expect(expectedTicketWinning).toEqual(ticketWinning);
+  });
+
+  it('Should get winnings given no last Powerball drawing', async () => {
+    expect(true).toBeTruthy();
+  });
+
+  it('Should get winnings given a specific last Powerball drawing', async () => {
+    expect(true).toBeTruthy();
   });
 });
