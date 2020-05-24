@@ -2,27 +2,32 @@ import * as dotenv from 'dotenv';
 import { DbConnection } from '../db-connection';
 import { PowerballDrawingRepository } from './powerball-drawing';
 import { powerballDrawing } from '../interfaces/powerballDrawing';
-import * as moment from 'moment';
+import Logger from '../helpers/logger';
 
 describe('Integration - PowerballDrawing CRUD Operations', () => {
   const powerballDrawingRepository = new PowerballDrawingRepository();
 
-  const powerballDrawing: powerballDrawing = {
-    drawingDate: moment()
-      .add(10, 'y')
-      .toDate(),
-    number01: 1,
-    number02: 2,
-    number03: 3,
-    number04: 4,
-    number05: 5,
-    powerNumber: 6,
-    createDate: moment().toDate(),
-    updateDate: moment().toDate()
-  };
+  let powerballDrawing: powerballDrawing;
 
   beforeAll(() => {
     dotenv.config();
+
+    let currentDateTime: Date = new Date();
+    currentDateTime.setMilliseconds(0);
+
+    let drawingDate: Date = new Date(`${currentDateTime.getFullYear() + 10}-01-02T00:00:00.000Z`);
+
+    powerballDrawing = {
+      drawingDate: drawingDate,
+      number01: 1,
+      number02: 2,
+      number03: 3,
+      number04: 4,
+      number05: 5,
+      powerNumber: 6,
+      createDate: currentDateTime,
+      updateDate: currentDateTime
+    };
   });
 
   afterAll(async () => {

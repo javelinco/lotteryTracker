@@ -1,21 +1,20 @@
 import Logger from '../helpers/logger';
 import { powerballDrawing } from '../interfaces/powerballDrawing';
 import { DbConnection } from '../db-connection';
-import * as moment from 'moment';
 import { ResultRow } from 'ts-postgres';
 
 export class PowerballDrawingRepository {
   private Translate(resultRow: ResultRow): powerballDrawing {
     const powerballDrawing: powerballDrawing = {
-      drawingDate: moment(`${resultRow.get('drawingdate')}`).toDate(),
+      drawingDate: new Date(`${resultRow.get('drawingdate')}`),
       number01: Number(resultRow.get('number01')),
       number02: Number(resultRow.get('number02')),
       number03: Number(resultRow.get('number03')),
       number04: Number(resultRow.get('number04')),
       number05: Number(resultRow.get('number05')),
       powerNumber: Number(resultRow.get('powernumber')),
-      createDate: moment(`${resultRow.get('createdate')}`).toDate(),
-      updateDate: moment(`${resultRow.get('updatedate')}`).toDate()
+      createDate: new Date(`${resultRow.get('createdate')}`),
+      updateDate: new Date(`${resultRow.get('updatedate')}`)
     };
     return powerballDrawing;
   }
