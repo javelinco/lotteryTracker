@@ -37,6 +37,7 @@ CREATE TABLE PowerballDrawing (
     Number04 INTEGER NOT NULL,
     Number05 INTEGER NOT NULL,
     PowerNumber INTEGER NOT NULL,
+    Multiplier INTEGER NOT NULL,
     CreateDate TIMESTAMP NOT NULL,
     UpdateDate TIMESTAMP NOT NULL
 );

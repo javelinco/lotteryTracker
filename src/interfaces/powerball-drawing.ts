@@ -6,6 +6,7 @@ export interface PowerballDrawing {
   number04: number;
   number05: number;
   powerNumber: number;
+  multiplier: number;
   createDate: Date;
   updateDate: Date;
 }

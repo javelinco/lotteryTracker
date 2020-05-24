@@ -36,12 +36,12 @@ export class PowerballTicketNumberRepository {
     return deleteResult.affected !== undefined && deleteResult.affected !== null && deleteResult.affected > 0;
   }
 
-  public async load(ticketId: string): Promise<Array<PowerballTicketNumber> | null> {
+  public async load(ticketId: string): Promise<Array<PowerballTicketNumber>> {
     const powerballTicketRepository = getConnection().getRepository(PowerballTicketNumberEntity);
     const powerballTicketNumbers = await powerballTicketRepository.find({
       where: `ticketId = '${ticketId}'`
     });
-    return powerballTicketNumbers !== undefined ? powerballTicketNumbers : null;
+    return powerballTicketNumbers !== undefined ? powerballTicketNumbers : [];
   }
 
   public async save(powerballTicketNumber: PowerballTicketNumber): Promise<PowerballTicketNumber | null> {

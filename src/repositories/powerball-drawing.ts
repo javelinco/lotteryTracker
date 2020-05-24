@@ -19,6 +19,8 @@ export class PowerballDrawingEntity {
   public number05!: number;
   @Column({ name: 'powernumber' })
   public powerNumber!: number;
+  @Column({ name: 'multiplier' })
+  public multiplier!: number;
   @Column('timestamp', { name: 'createdate' })
   public createDate!: Date;
   @Column('timestamp', { name: 'updatedate' })

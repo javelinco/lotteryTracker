@@ -46,7 +46,8 @@ function convert(powerballDrawingEntries: Array<PowerballDrawingEntry>): Array<P
       number03: +powerballNumbers[2],
       number04: +powerballNumbers[3],
       number05: +powerballNumbers[4],
-      powerNumber: +powerballDrawingEntry.field_multiplier,
+      powerNumber: +powerballNumbers[5],
+      multiplier: +powerballDrawingEntry.field_multiplier,
       createDate: moment().toDate(),
       updateDate: moment().toDate()
     };

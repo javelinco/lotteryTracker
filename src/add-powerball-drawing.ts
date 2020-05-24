@@ -37,6 +37,7 @@ export async function addPowerBallDrawing(
     number04: drawingNumber.number04,
     number05: drawingNumber.number05,
     powerNumber: drawingNumber.powerNumber,
+    multiplier: multiplier,
     createDate: currentDate,
     updateDate: currentDate
   };

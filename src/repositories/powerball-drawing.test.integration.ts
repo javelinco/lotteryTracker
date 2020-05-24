@@ -15,6 +15,7 @@ describe('Integration - PowerballDrawing CRUD Operations', () => {
     number04: 4,
     number05: 5,
     powerNumber: 6,
+    multiplier: 2,
     createDate: new Date('1/1/2130'),
     updateDate: new Date('1/1/2130')
   };
