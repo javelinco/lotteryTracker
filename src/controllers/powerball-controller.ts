@@ -5,8 +5,7 @@ import { OsResponse, HapiRequest } from '../interfaces/hapi-request';
 import Joi = require('@hapi/joi');
 import { PowerballNumberValidator } from '../validators/powerball-number';
 import { addPowerballTicket } from '../add-powerball-ticket';
-import { addPowerBallDrawing } from '../add-powerball-drawing';
-import { PowerballReport } from '../interfaces/powerball-report';
+import { Powerball, DrawingWinning } from '../Powerball';
 
 @controller('/v1/powerball')
 export class PowerballController implements Controller {
@@ -45,30 +44,10 @@ export class PowerballController implements Controller {
 
   @options({
     tags: ['api'],
-    description: 'Adds a new Powerball drawing'
-  })
-  @validate({
-    payload: Joi.object().keys({
-      drawingDate: Joi.date()
-        .required()
-        .description('Date of drawing. Used to calculate ticket winnings for the drawing.'),
-      drawingNumber: PowerballNumberValidator.schema,
-      multiplier: Joi.number()
-        .required()
-        .description('The winning multipler. Used to calculate ticket winnings for the drawing.')
-    })
-  })
-  @put('/drawing')
-  public async drawing(request: HapiRequest): Promise<OsResponse<PowerballReport>> {
-    return await addPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
-  }
-
-  @options({
-    tags: ['api'],
     description: 'Checks for new Powerball winnings'
   })
   @put('/drawing/winnings')
-  public async newWinnings(request: HapiRequest): Promise<OsResponse<PowerballReport>> {
-    return await addPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
+  public async newWinnings(): Promise<OsResponse<Array<DrawingWinning>>> {
+    return await new Powerball().getWinningsSinceLastDrawing();
   }
 }

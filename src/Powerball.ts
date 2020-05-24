@@ -46,10 +46,10 @@ export class Powerball {
   public static defaultGrandPrize: number = 1000000000;
 
   public constructor(
-    powerballDrawingRepository: PowerballDrawingRepository,
-    powerballTicketDrawingRepository: PowerballTicketDrawingRepository,
-    powerballTicketNumberRepository: PowerballTicketNumberRepository,
-    powerballTicketRepository: PowerballTicketRepository
+    powerballDrawingRepository: PowerballDrawingRepository = new PowerballDrawingRepository(),
+    powerballTicketDrawingRepository: PowerballTicketDrawingRepository = new PowerballTicketDrawingRepository(),
+    powerballTicketNumberRepository: PowerballTicketNumberRepository = new PowerballTicketNumberRepository(),
+    powerballTicketRepository: PowerballTicketRepository = new PowerballTicketRepository()
   ) {
     this.powerballDrawingRepository = powerballDrawingRepository;
     this.powerballTicketDrawingRepository = powerballTicketDrawingRepository;
