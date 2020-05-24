@@ -2,7 +2,6 @@ import * as dotenv from 'dotenv';
 import { DbConnection } from '../db-connection';
 import { PowerballDrawingRepository } from './powerball-drawing';
 import { powerballDrawing } from '../interfaces/powerballDrawing';
-import Logger from '../helpers/logger';
 
 describe('Integration - PowerballDrawing CRUD Operations', () => {
   const powerballDrawingRepository = new PowerballDrawingRepository();
