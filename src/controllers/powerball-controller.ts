@@ -62,4 +62,13 @@ export class PowerballController implements Controller {
   public async drawing(request: HapiRequest): Promise<OsResponse<powerballReport>> {
     return await AddPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
   }
+
+  @options({
+    tags: ['api'],
+    description: 'Checks for new Powerball winnings'
+  })
+  @put('/drawing/winnings')
+  public async newWinnings(request: HapiRequest): Promise<OsResponse<powerballReport>> {
+    return await AddPowerBallDrawing(request.payload.drawingDate, request.payload.drawingNumber, request.payload.multiplier, 5000000);
+  }
 }

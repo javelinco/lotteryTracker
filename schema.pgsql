@@ -1,7 +1,7 @@
 CREATE TABLE PowerballTicket (
     TicketId UUID NOT NULL PRIMARY KEY,
     PurchaseDate TIMESTAMP NOT NULL,
-    Cost NUMERIC(10,2) NOT NULL,
+    Cost MONEY NOT NULL,
     PowerPlay Boolean DEFAULT FALSE,
     OwnerId UUID,
     CreateDate TIMESTAMP NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE PowerballDrawing (
 CREATE TABLE OwnerWinning (
     TicketId UUID NOT NULL REFERENCES PowerballTicket(TicketId),
     DrawingDate DATE NOT NULL,
-    Amount NUMERIC(10,2) NOT NULL,
+    Amount MONEY NOT NULL,
     CreateDate TIMESTAMP NOT NULL,
     UpdateDate TIMESTAMP NOT NULL,
     PRIMARY KEY (TicketId, DrawingDate)

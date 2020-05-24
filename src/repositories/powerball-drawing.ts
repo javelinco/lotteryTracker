@@ -1,93 +1,62 @@
-import Logger from '../helpers/logger';
 import { powerballDrawing } from '../interfaces/powerballDrawing';
-import { DbConnection } from '../db-connection';
-import { ResultRow } from 'ts-postgres';
+import { Entity, PrimaryColumn, Column, getConnection } from 'typeorm';
+import * as moment from 'moment';
+import { dateTimeFormat } from '../helpers/dateFormat';
+
+@Entity({ name: 'powerballdrawing' })
+export class PowerballDrawingEntity {
+  @PrimaryColumn('timestamp', { name: 'drawingdate' })
+  drawingDate!: Date;
+  @Column({ name: 'number01' })
+  number01!: number;
+  @Column({ name: 'number02' })
+  number02!: number;
+  @Column({ name: 'number03' })
+  number03!: number;
+  @Column({ name: 'number04' })
+  number04!: number;
+  @Column({ name: 'number05' })
+  number05!: number;
+  @Column({ name: 'powernumber' })
+  powerNumber!: number;
+  @Column('timestamp', { name: 'createdate' })
+  createDate!: Date;
+  @Column('timestamp', { name: 'updatedate' })
+  updateDate!: Date;
+}
 
 export class PowerballDrawingRepository {
-  private Translate(resultRow: ResultRow): powerballDrawing {
-    const powerballDrawing: powerballDrawing = {
-      drawingDate: new Date(`${resultRow.get('drawingdate')}`),
-      number01: Number(resultRow.get('number01')),
-      number02: Number(resultRow.get('number02')),
-      number03: Number(resultRow.get('number03')),
-      number04: Number(resultRow.get('number04')),
-      number05: Number(resultRow.get('number05')),
-      powerNumber: Number(resultRow.get('powernumber')),
-      createDate: new Date(`${resultRow.get('createdate')}`),
-      updateDate: new Date(`${resultRow.get('updatedate')}`)
-    };
-    return powerballDrawing;
-  }
-
   public async Delete(drawingDate: Date): Promise<boolean> {
-    try {
-      const client = await DbConnection.getConnection();
-      await client.query('DELETE FROM powerballdrawing WHERE drawingdate = $1', [drawingDate]);
-    } catch (error) {
-      Logger.instance.error({ message: `Unable to delete Powerball drawing for ${drawingDate}`, error: error });
-      throw error;
-    }
-    return true;
+    const deleteResult = await getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(PowerballDrawingEntity)
+      .where('drawingDate = :drawingDate', { drawingDate: drawingDate })
+      .execute();
+    return deleteResult.affected !== undefined && deleteResult.affected !== null && deleteResult.affected > 0;
   }
 
-  public async GetLast(): Promise<powerballDrawing | null> {
-    try {
-      const client = await DbConnection.getConnection();
-      const stream = client.query('SELECT * FROM powerballdrawing ORDER BY drawingdate DESC LIMIT 1;');
-      for await (const resultRow of stream) {
-        return this.Translate(resultRow);
-      }
-    } catch (error) {
-      Logger.instance.error({ message: 'Unable to retrieve latest Powerball drawing', error: error });
-      throw error;
-    }
-    return null;
+  public async GetLatest(): Promise<powerballDrawing | null> {
+    const powerballDrawingRepository = getConnection().getRepository(PowerballDrawingEntity);
+    const powerballDrawing = await powerballDrawingRepository
+      .createQueryBuilder()
+      .orderBy('drawingdate', 'DESC')
+      .getOne();
+    return powerballDrawing !== undefined ? powerballDrawing : null;
   }
 
   public async Load(drawingDate: Date): Promise<powerballDrawing | null> {
-    try {
-      const client = await DbConnection.getConnection();
-      const stream = client.query('SELECT * FROM powerballdrawing WHERE drawingdate = $1;', [drawingDate]);
-      for await (const resultRow of stream) {
-        return this.Translate(resultRow);
-      }
-    } catch (error) {
-      Logger.instance.error({ message: `Unable to retrieve Powerball drawing for ${drawingDate}`, error: error });
-      throw error;
-    }
-    return null;
+    const powerballDrawingRepository = getConnection().getRepository(PowerballDrawingEntity);
+    const powerballDrawing = await powerballDrawingRepository.findOne({
+      where: `drawingDate = '${moment(drawingDate).format(dateTimeFormat)}'`
+    });
+    return powerballDrawing !== undefined ? powerballDrawing : null;
   }
 
   public async Save(powerballDrawing: powerballDrawing): Promise<powerballDrawing | null> {
-    const powerballDrawingQuery =
-      'INSERT INTO PowerballDrawing ' +
-      '(DrawingDate, Number01, Number02, Number03, Number04, Number05, PowerNumber, CreateDate, UpdateDate) ' +
-      'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ' +
-      'ON CONFLICT (drawingDate) DO UPDATE ' +
-      'SET Number01 = $2, ' +
-      ' Number02 = $3, ' +
-      ' Number03 = $4, ' +
-      ' Number04 = $5, ' +
-      ' Number05 = $6, ' +
-      ' PowerNumber = $7, ' +
-      ' UpdateDate = $9';
-    try {
-      const client = await DbConnection.getConnection();
-      await client.query(powerballDrawingQuery, [
-        powerballDrawing.drawingDate,
-        powerballDrawing.number01,
-        powerballDrawing.number02,
-        powerballDrawing.number03,
-        powerballDrawing.number04,
-        powerballDrawing.number05,
-        powerballDrawing.powerNumber,
-        powerballDrawing.createDate,
-        powerballDrawing.updateDate
-      ]);
-    } catch (error) {
-      Logger.instance.error({ message: `Unable to save Powerball drawing for ${powerballDrawing.drawingDate}`, error: error });
-      throw error;
-    }
-    return this.Load(powerballDrawing.drawingDate);
+    const powerballDrawingRepository = getConnection().getRepository(PowerballDrawingEntity);
+    const savedEntity = await powerballDrawingRepository.save(powerballDrawing);
+
+    return savedEntity !== undefined ? savedEntity : null;
   }
 }

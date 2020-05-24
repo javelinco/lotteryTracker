@@ -1,7 +1,7 @@
 import { AddPowerBallDrawing } from './addPowerBallDrawing';
 import { drawingNumber } from './interfaces/drawingNumber';
 import { powerballNumber } from './interfaces/powerballNumber';
-import uuid = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
 import { powerballReport, ticketWinningReport, powerballReportNumber } from './interfaces/powerballReport';
 import Logger from './helpers/logger';
 
@@ -26,7 +26,7 @@ async function getLotteryReturnOnInvestment(): Promise<number> {
 
 describe('Add Powerball Drawing', () => {
   beforeAll(() => {
-    ticketIds = [uuid(), uuid(), uuid()];
+    ticketIds = [uuidv4(), uuidv4(), uuidv4()];
 
     drawingNumbers = [
       {

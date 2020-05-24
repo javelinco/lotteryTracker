@@ -1,45 +1,51 @@
 import * as dotenv from 'dotenv';
-import { DbConnection } from '../db-connection';
 import { PowerballDrawingRepository } from './powerball-drawing';
 import { powerballDrawing } from '../interfaces/powerballDrawing';
+import { createConnection, getConnection } from 'typeorm';
+import { TypeOrmHelpers } from '../helpers/orm-helpers';
 
 describe('Integration - PowerballDrawing CRUD Operations', () => {
   const powerballDrawingRepository = new PowerballDrawingRepository();
 
-  let powerballDrawing: powerballDrawing;
+  const powerballDrawing: powerballDrawing = {
+    drawingDate: new Date('1/1/2130'),
+    number01: 1,
+    number02: 2,
+    number03: 3,
+    number04: 4,
+    number05: 5,
+    powerNumber: 6,
+    createDate: new Date('1/1/2130'),
+    updateDate: new Date('1/1/2130')
+  };
 
-  beforeAll(() => {
+  beforeAll(async () => {
     dotenv.config();
 
-    let currentDateTime: Date = new Date();
-    currentDateTime.setMilliseconds(0);
-
-    let drawingDate: Date = new Date(`${currentDateTime.getFullYear() + 10}-01-02T00:00:00.000Z`);
-
-    powerballDrawing = {
-      drawingDate: drawingDate,
-      number01: 1,
-      number02: 2,
-      number03: 3,
-      number04: 4,
-      number05: 5,
-      powerNumber: 6,
-      createDate: currentDateTime,
-      updateDate: currentDateTime
-    };
+    await createConnection(TypeOrmHelpers.GetTypeOrmConnectionOptions());
   });
 
   afterAll(async () => {
-    DbConnection.closeConnection();
+    getConnection().close();
   });
 
-  it('Saves, loads and deletes a course student', async () => {
+  it('Should Save, Load and Delete', async () => {
     const saved = await powerballDrawingRepository.Save(powerballDrawing);
     const loaded = await powerballDrawingRepository.Load(powerballDrawing.drawingDate);
     const deleted = await powerballDrawingRepository.Delete(powerballDrawing.drawingDate);
 
     expect(saved).toEqual(powerballDrawing);
     expect(loaded).toEqual(powerballDrawing);
+    expect(deleted).toBeTruthy();
+  });
+
+  it('Should load latest', async () => {
+    const saved = await powerballDrawingRepository.Save(powerballDrawing);
+    const latest = await powerballDrawingRepository.GetLatest();
+    const deleted = await powerballDrawingRepository.Delete(powerballDrawing.drawingDate);
+
+    expect(saved).toEqual(powerballDrawing);
+    expect(latest).toEqual(powerballDrawing);
     expect(deleted).toBeTruthy();
   });
 });

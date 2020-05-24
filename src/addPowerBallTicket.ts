@@ -1,4 +1,4 @@
-import { v4 as uuid } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Client } from 'ts-postgres';
 import { powerballNumber } from './interfaces/powerballNumber';
 import { powerballTicket } from './interfaces/powerballTicket';
@@ -22,7 +22,7 @@ export async function AddPowerballTicket(
   const currentDate = new Date();
 
   const powerballTicket: powerballTicket = {
-    ticketId: uuid(),
+    ticketId: uuidv4(),
     purchaseDate: purchaseDate,
     cost: numbers.length * drawings * (powerPlay ? 3 : 2),
     powerPlay: powerPlay,
@@ -32,7 +32,7 @@ export async function AddPowerballTicket(
 
   const powerballNumbers: Array<powerballTicketNumber> = numbers.map((number: powerballNumber) => {
     return {
-      ticketNumberId: uuid(),
+      ticketNumberId: uuidv4(),
       ticketId: powerballTicket.ticketId,
       number01: number.number01,
       number02: number.number02,

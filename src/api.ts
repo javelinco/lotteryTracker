@@ -2,13 +2,16 @@ import * as Hapi from '@hapi/hapi';
 import * as Boom from '@hapi/boom';
 import Logger from './helpers/logger';
 import Router from './router';
-import { DbConnection } from './db-connection';
+import { createConnection, getConnection } from 'typeorm';
+import { TypeOrmHelpers } from './helpers/orm-helpers';
 
 export default class Api {
   private static _instance: Hapi.Server;
 
   public static async start(): Promise<Hapi.Server> {
     try {
+      await createConnection(TypeOrmHelpers.GetTypeOrmConnectionOptions());
+
       const serverConfig: Hapi.ServerOptions = {
         port: process.env.SERVICE_PORT || 3050,
         routes: {
@@ -41,7 +44,7 @@ export default class Api {
   }
 
   public static async stop(): Promise<void> {
-    DbConnection.closeConnection();
+    getConnection().close();
   }
 
   public static get instance(): Hapi.Server {
