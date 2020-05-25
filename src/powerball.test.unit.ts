@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PowerballTicketNumber } from './interfaces/powerball-ticket-number';
 import { PowerballTicketRepository } from './repositories/powerball-ticket';
 import { PowerballTicket } from './interfaces/powerball-ticket';
+import { OwnerWinningRepository } from './repositories/owner-winning';
 
 describe('Unit - Powerball', () => {
   function createPowerballTicketNumber(ticketId: string, numbers: Array<number>): PowerballTicketNumber {
@@ -31,12 +32,14 @@ describe('Unit - Powerball', () => {
     const powerballTicketDrawingRepositoryMock = mock(PowerballTicketDrawingRepository);
     const powerballTicketNumberRepositoryMock = mock(PowerballTicketNumberRepository);
     const powerballTicketRepositoryMock = mock(PowerballTicketRepository);
+    const ownerWinningRepositoryMock = mock(OwnerWinningRepository);
 
     const powerball = new Powerball(
       instance(powerballDrawingRepositoryMock),
       instance(powerballTicketDrawingRepositoryMock),
       instance(powerballTicketNumberRepositoryMock),
-      instance(powerballTicketRepositoryMock)
+      instance(powerballTicketRepositoryMock),
+      instance(ownerWinningRepositoryMock)
     );
     //Given a powerball ticket with five numbers
     const powerballTicket: PowerballTicket = {

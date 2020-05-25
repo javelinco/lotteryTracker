@@ -8,6 +8,7 @@ import { PowerballTicketRepository } from './repositories/powerball-ticket';
 import axios from 'axios';
 import * as moment from 'moment';
 import { dateFormat } from './helpers/date-format';
+import { OwnerWinningRepository } from './repositories/owner-winning';
 
 export interface DrawingWinning {
   drawingDate: Date;
@@ -42,6 +43,7 @@ export class Powerball {
   private powerballTicketDrawingRepository: PowerballTicketDrawingRepository;
   private powerballTicketNumberRepository: PowerballTicketNumberRepository;
   private powerballTicketRepository: PowerballTicketRepository;
+  private ownerWinningRepository: OwnerWinningRepository;
 
   public static defaultGrandPrize: number = 1000000000;
 
@@ -49,12 +51,14 @@ export class Powerball {
     powerballDrawingRepository: PowerballDrawingRepository = new PowerballDrawingRepository(),
     powerballTicketDrawingRepository: PowerballTicketDrawingRepository = new PowerballTicketDrawingRepository(),
     powerballTicketNumberRepository: PowerballTicketNumberRepository = new PowerballTicketNumberRepository(),
-    powerballTicketRepository: PowerballTicketRepository = new PowerballTicketRepository()
+    powerballTicketRepository: PowerballTicketRepository = new PowerballTicketRepository(),
+    ownerWinningRepository: OwnerWinningRepository = new OwnerWinningRepository()
   ) {
     this.powerballDrawingRepository = powerballDrawingRepository;
     this.powerballTicketDrawingRepository = powerballTicketDrawingRepository;
     this.powerballTicketNumberRepository = powerballTicketNumberRepository;
     this.powerballTicketRepository = powerballTicketRepository;
+    this.ownerWinningRepository = ownerWinningRepository;
   }
 
   public async getWinningsSinceLastDrawing(): Promise<Array<DrawingWinning>> {
@@ -87,9 +91,26 @@ export class Powerball {
       for (const ticketId of ticketIds) {
         const powerballTicket = await this.powerballTicketRepository.load(ticketId);
         const powerballTicketNumbers = await this.powerballTicketNumberRepository.load(ticketId);
-        ticketWinnings.push(
-          this.calculateWinning(ticketId, powerballTicket!.powerPlay, powerballDrawing, powerballTicketNumbers, Powerball.defaultGrandPrize)
+        const calculatedWinning = this.calculateWinning(
+          ticketId,
+          powerballTicket!.powerPlay,
+          powerballDrawing,
+          powerballTicketNumbers,
+          Powerball.defaultGrandPrize
         );
+        ticketWinnings.push(calculatedWinning);
+
+        const totalAmount = calculatedWinning.ticketNumberWinnings.reduce(function(a, b) {
+          return a + (b.amount || 0);
+        }, 0);
+
+        await this.ownerWinningRepository.save({
+          ticketId: ticketId,
+          drawingDate: powerballDrawing.drawingDate,
+          amount: totalAmount,
+          createDate: new Date(),
+          updateDate: new Date()
+        });
       }
 
       // For each drawing, generate a report line for the ticket winnings
