@@ -203,7 +203,9 @@ export class Powerball {
   }
 
   public async getPowerballDrawingsSince(beginDate: Date): Promise<Array<PowerballDrawing>> {
-    const url = `${this.powerballUrl}&min=${moment(beginDate).format(dateFormat)}%2000:00:00&max=${moment().format(dateFormat)}%2023:59:59`;
+    const url = `${this.powerballUrl}&min=${moment(beginDate)
+      .add(1, 'd')
+      .format(dateFormat)}%2000:00:00&max=${moment().format(dateFormat)}%2023:59:59`;
     axios.defaults.adapter = require('axios/lib/adapters/http');
     try {
       return this.convert((await axios.get(url)).data);
