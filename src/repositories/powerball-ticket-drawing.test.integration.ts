@@ -15,8 +15,8 @@ describe('Integration - PowerballTicketDrawing CRUD Operations', () => {
 
   const ownerId = uuidv4();
 
-  async function createPowerballTicketDrawing(drawingDate: Date): Promise<PowerballTicketDrawing> {
-    const testTicket = createTicket(uuidv4(), ownerId);
+  async function createPowerballTicketDrawing(drawingDate: Date, ticketId: string = uuidv4()): Promise<PowerballTicketDrawing> {
+    const testTicket = createTicket(ticketId, ownerId);
     await powerballTicketRepository.save(testTicket);
     ticketIds.push(testTicket.ticketId);
 
@@ -73,8 +73,30 @@ describe('Integration - PowerballTicketDrawing CRUD Operations', () => {
 
     expect(drawings).toEqual(expectedDrawings);
 
-    for (const ticketId of ticketIds) {
-      await powerballTicketDrawingRepository.delete(ticketId, drawingDate);
+    for (const expectedDrawing of expectedDrawings) {
+      await powerballTicketDrawingRepository.delete(expectedDrawing.ticketId, expectedDrawing.drawingDate);
+    }
+  });
+
+  it('Should get all for a given ticket id', async () => {
+    const ticketId = uuidv4();
+
+    const expectedDrawings = [
+      await createPowerballTicketDrawing(new Date('1/1/2020'), ticketId),
+      await createPowerballTicketDrawing(new Date('1/2/2020'), ticketId),
+      await createPowerballTicketDrawing(new Date('1/3/2020'), ticketId)
+    ];
+
+    await powerballTicketDrawingRepository.save(expectedDrawings[0]);
+    await powerballTicketDrawingRepository.save(expectedDrawings[1]);
+    await powerballTicketDrawingRepository.save(expectedDrawings[2]);
+
+    const drawings = await powerballTicketDrawingRepository.getAllForTicket(ticketId);
+
+    expect(drawings).toEqual(expectedDrawings);
+
+    for (const expectedDrawing of expectedDrawings) {
+      await powerballTicketDrawingRepository.delete(expectedDrawing.ticketId, expectedDrawing.drawingDate);
     }
   });
 });

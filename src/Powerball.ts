@@ -10,6 +10,8 @@ import * as moment from 'moment';
 import { dateFormat } from './helpers/date-format';
 import { OwnerWinningRepository } from './repositories/owner-winning';
 import { PowerballTicketReport } from './interfaces/powerball-ticket-report';
+import { PowerballTicket } from './interfaces/powerball-ticket';
+import { PowerballTicketPurchase } from './interfaces/powerball-ticket-purchase';
 
 export interface DrawingWinning {
   drawingDate: Date;
@@ -60,6 +62,24 @@ export class Powerball {
     this.powerballTicketNumberRepository = powerballTicketNumberRepository;
     this.powerballTicketRepository = powerballTicketRepository;
     this.ownerWinningRepository = ownerWinningRepository;
+  }
+
+  public async addTicket(ticket: PowerballTicket): Promise<PowerballTicketPurchase> {
+    const purchase: PowerballTicketPurchase = {
+      ticket: ticket,
+      numbers: [],
+      drawings: []
+    };
+
+    // Save ticket
+
+    // Save numbers
+
+    // Save drawings
+
+    // Check for owner winnings
+
+    return purchase;
   }
 
   public async getPowerballReportsByDrawingDate(drawingDate: Date): Promise<Array<PowerballTicketReport>> {
