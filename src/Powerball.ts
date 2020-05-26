@@ -11,7 +11,10 @@ import { dateFormat } from './helpers/date-format';
 import { OwnerWinningRepository } from './repositories/owner-winning';
 import { PowerballTicketReport } from './interfaces/powerball-ticket-report';
 import { PowerballTicket } from './interfaces/powerball-ticket';
-import { PowerballTicketPurchase } from './interfaces/powerball-ticket-purchase';
+import { v4 as uuidv4 } from 'uuid';
+import { PowerballNumber } from './interfaces/powerball-number';
+import { PowerballTicketDrawing } from './interfaces/powerball-ticket-drawing';
+import { OwnerWinning } from './interfaces/owner-winning';
 
 export interface DrawingWinning {
   drawingDate: Date;
@@ -64,21 +67,89 @@ export class Powerball {
     this.ownerWinningRepository = ownerWinningRepository;
   }
 
-  public async addTicket(ticket: PowerballTicket): Promise<PowerballTicketPurchase> {
-    const purchase: PowerballTicketPurchase = {
-      ticket: ticket,
-      numbers: [],
-      drawings: []
-    };
+  public async addTicket(
+    purchaseDate: Date,
+    powerPlay: boolean,
+    numbers: Array<PowerballNumber>,
+    drawings: number
+  ): Promise<PowerballTicketReport> {
+    const currentDate = new Date();
 
     // Save ticket
+    const ticket: PowerballTicket = {
+      ticketId: uuidv4(),
+      purchaseDate: purchaseDate,
+      cost: numbers.length * drawings * (powerPlay ? 3 : 2),
+      powerPlay: powerPlay,
+      createDate: currentDate,
+      updateDate: currentDate
+    };
+    await this.powerballTicketRepository.save(ticket);
 
     // Save numbers
+    const powerballTicketNumbers: Array<PowerballTicketNumber> = [];
+    for (const number of numbers) {
+      const powerballTicketNumber: PowerballTicketNumber = {
+        ticketNumberId: uuidv4(),
+        ticketId: ticket.ticketId,
+        ...number,
+        createDate: currentDate,
+        updateDate: currentDate
+      };
+      await this.powerballTicketNumberRepository.save(powerballTicketNumber);
+      powerballTicketNumbers.push(powerballTicketNumber);
+    }
 
     // Save drawings
+    const drawingDates: Array<Date> = this.getPowerballDrawingDates(purchaseDate, drawings);
+    const powerballTicketDrawings: Array<PowerballTicketDrawing> = [];
+    for (const drawingDate of drawingDates) {
+      const powerballTicketDrawing: PowerballTicketDrawing = {
+        ticketId: ticket.ticketId,
+        drawingDate: drawingDate,
+        createDate: currentDate,
+        updateDate: currentDate
+      };
+      await this.powerballTicketDrawingRepository.save(powerballTicketDrawing);
+      powerballTicketDrawings.push(powerballTicketDrawing);
+    }
 
     // Check for owner winnings
+    const ownerWinnings: Array<OwnerWinning> = [];
+    for (const drawingDate of drawingDates) {
+      const powerballDrawing = await this.powerballDrawingRepository.load(drawingDate);
+      if (powerballDrawing) {
+        const calculatedWinning = this.calculateWinning(
+          ticket.ticketId,
+          ticket.powerPlay,
+          powerballDrawing,
+          powerballTicketNumbers,
+          Powerball.defaultGrandPrize
+        );
 
+        const totalAmount = calculatedWinning.ticketNumberWinnings.reduce(function(a, b) {
+          return a + (b.amount || 0);
+        }, 0);
+
+        const ownerWinning: OwnerWinning = {
+          ticketId: ticket.ticketId,
+          drawingDate: drawingDate,
+          amount: totalAmount,
+          createDate: currentDate,
+          updateDate: currentDate
+        };
+
+        await this.ownerWinningRepository.save(ownerWinning);
+        ownerWinnings.push(ownerWinning);
+      }
+    }
+
+    const purchase: PowerballTicketReport = {
+      ticket: ticket,
+      numbers: powerballTicketNumbers,
+      drawings: powerballTicketDrawings,
+      winnings: ownerWinnings
+    };
     return purchase;
   }
 
@@ -254,6 +325,61 @@ export class Powerball {
       Logger.instance.error(error);
       throw error;
     }
+  }
+
+  public getPowerballDrawingDates(purchaseDate: Date, drawings: number): Array<Date> {
+    const wednesdayDayOfWeek = 3;
+    const saturdayDayOfWeek = 6;
+
+    let referenceDate = new Date(purchaseDate);
+    referenceDate.setHours(0, 0, 0, 0);
+
+    const drawingDates: Array<Date> = [];
+    if (moment(referenceDate).isoWeekday() === wednesdayDayOfWeek || moment(referenceDate).isoWeekday() === saturdayDayOfWeek) {
+      drawingDates.push(referenceDate);
+    } else {
+      referenceDate = moment(referenceDate)
+        .add(1, 'd')
+        .toDate();
+    }
+
+    while (
+      drawingDates.length < drawings &&
+      referenceDate.getTime() <
+        moment(purchaseDate)
+          .add(5, 'w')
+          .toDate()
+          .getTime()
+    ) {
+      const nextWednesday = moment(referenceDate)
+        .isoWeekday(wednesdayDayOfWeek)
+        .toDate();
+
+      const nextSaturday = moment(referenceDate)
+        .isoWeekday(saturdayDayOfWeek)
+        .toDate();
+
+      let nextDrawing = new Date('1/1/1970');
+      if (nextWednesday.getTime() >= referenceDate.getTime()) {
+        nextDrawing = new Date(nextWednesday);
+      } else if (nextSaturday.getTime() >= referenceDate.getTime()) {
+        nextDrawing = new Date(nextSaturday);
+      }
+
+      if (
+        nextDrawing.getTime() !== new Date('1/1/1970').getTime() &&
+        !drawingDates.find(x => {
+          return x.getTime() === nextDrawing.getTime();
+        })
+      ) {
+        drawingDates.push(nextDrawing);
+      }
+
+      referenceDate = moment(referenceDate)
+        .add(1, 'd')
+        .toDate();
+    }
+    return drawingDates;
   }
 
   private getMatchCountForTicketNumber(powerballTicketNumber: PowerballTicketNumber, powerballDrawing: PowerballDrawing): number {

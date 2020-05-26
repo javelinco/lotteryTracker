@@ -10,6 +10,12 @@ import { PowerballTicketRepository } from './repositories/powerball-ticket';
 import { PowerballTicket } from './interfaces/powerball-ticket';
 import { OwnerWinningRepository } from './repositories/owner-winning';
 
+interface TestDrawingDate {
+  purchaseDate: Date;
+  drawingCount: number;
+  expectedDrawingDates: Array<Date>;
+}
+
 describe('Unit - Powerball', () => {
   function createPowerballTicketNumber(ticketId: string, numbers: Array<number>): PowerballTicketNumber {
     const powerballTicketNumber: PowerballTicketNumber = {
@@ -27,20 +33,25 @@ describe('Unit - Powerball', () => {
     return powerballTicketNumber;
   }
 
-  it('Should calculate Powerball winnings for a ticket', async () => {
+  let powerball: Powerball;
+
+  beforeEach(() => {
     const powerballDrawingRepositoryMock = mock(PowerballDrawingRepository);
     const powerballTicketDrawingRepositoryMock = mock(PowerballTicketDrawingRepository);
     const powerballTicketNumberRepositoryMock = mock(PowerballTicketNumberRepository);
     const powerballTicketRepositoryMock = mock(PowerballTicketRepository);
     const ownerWinningRepositoryMock = mock(OwnerWinningRepository);
 
-    const powerball = new Powerball(
+    powerball = new Powerball(
       instance(powerballDrawingRepositoryMock),
       instance(powerballTicketDrawingRepositoryMock),
       instance(powerballTicketNumberRepositoryMock),
       instance(powerballTicketRepositoryMock),
       instance(ownerWinningRepositoryMock)
     );
+  });
+
+  it('Should calculate Powerball winnings for a ticket', async () => {
     //Given a powerball ticket with five numbers
     const powerballTicket: PowerballTicket = {
       ticketId: uuidv4(),
@@ -127,5 +138,63 @@ describe('Unit - Powerball', () => {
 
   it('Should get winnings given a specific last Powerball drawing', async () => {
     expect(true).toBeTruthy();
+  });
+
+  it('Should get next drawing dates given purchase date and number of drawings', () => {
+    const testDrawingDates: Array<TestDrawingDate> = [
+      {
+        purchaseDate: new Date('5/25/2020'),
+        drawingCount: 5,
+        expectedDrawingDates: [
+          new Date('5/27/2020'),
+          new Date('5/30/2020'),
+          new Date('6/3/2020'),
+          new Date('6/6/2020'),
+          new Date('6/10/2020')
+        ]
+      },
+      {
+        purchaseDate: new Date('2/25/2020'),
+        drawingCount: 1,
+        expectedDrawingDates: [new Date('2/26/2020')]
+      },
+      {
+        purchaseDate: new Date('11/25/2019'),
+        drawingCount: 2,
+        expectedDrawingDates: [new Date('11/27/2019'), new Date('11/30/2019')]
+      },
+      {
+        purchaseDate: new Date('12/29/2019'),
+        drawingCount: 2,
+        expectedDrawingDates: [new Date('1/1/2020'), new Date('1/4/2020')]
+      },
+      {
+        purchaseDate: new Date('4/1/2020'),
+        drawingCount: 3,
+        expectedDrawingDates: [new Date('4/1/2020'), new Date('4/4/2020'), new Date('4/8/2020')]
+      },
+      {
+        purchaseDate: new Date('2/25/2020'),
+        drawingCount: 10,
+        expectedDrawingDates: [
+          new Date('2/26/2020'),
+          new Date('2/29/2020'),
+          new Date('3/4/2020'),
+          new Date('3/7/2020'),
+          new Date('3/11/2020'),
+          new Date('3/14/2020'),
+          new Date('3/18/2020'),
+          new Date('3/21/2020'),
+          new Date('3/25/2020'),
+          new Date('3/28/2020')
+        ]
+      }
+    ];
+
+    for (const testDrawingDate of testDrawingDates) {
+      const drawingDates = powerball.getPowerballDrawingDates(testDrawingDate.purchaseDate, testDrawingDate.drawingCount);
+
+      expect(drawingDates).toEqual(testDrawingDate.expectedDrawingDates);
+    }
   });
 });
