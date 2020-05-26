@@ -14,6 +14,7 @@ export class PowerballController implements Controller {
 
   @options({
     tags: ['api'],
+<<<<<<< HEAD
     description: 'Gets all tickets that have a drawing for the supplied date'
   })
   @validate({
@@ -31,12 +32,13 @@ export class PowerballController implements Controller {
   @options({
     tags: ['api'],
     description: 'Adds a new Powerball ticket'
+=======
+    description: 'Adds a new Powerball ticket',
+>>>>>>> master
   })
   @validate({
     payload: Joi.object().keys({
-      purchaseDate: Joi.date()
-        .required()
-        .description('Date of ticket purchased. Used to calculate drawing dates.'),
+      purchaseDate: Joi.date().required().description('Date of ticket purchased. Used to calculate drawing dates.'),
       powerPlay: Joi.boolean()
         .required()
         .description('Whether or not PowerPlay was purchased. Used to calculate winnings when drawings are entered against the ticket.'),
@@ -45,8 +47,8 @@ export class PowerballController implements Controller {
         .required()
         .description(
           'The number of drawings purchased for the ticket. Used to determine, with the purchase date, the drawing dates for the ticket.'
-        )
-    })
+        ),
+    }),
   })
   @post('/v1/powerball/ticket')
   public async ticket(request: HapiRequest): Promise<OsResponse<PowerballTicketReport>> {
@@ -60,7 +62,18 @@ export class PowerballController implements Controller {
 
   @options({
     tags: ['api'],
+<<<<<<< HEAD
     description: 'Checks for new Powerball winnings'
+=======
+    description: 'Adds a new Powerball drawing',
+  })
+  @validate({
+    payload: Joi.object().keys({
+      drawingDate: Joi.date().required().description('Date of drawing. Used to calculate ticket winnings for the drawing.'),
+      drawingNumber: powerballNumberValidator.schema,
+      multiplier: Joi.number().required().description('The winning multipler. Used to calculate ticket winnings for the drawing.'),
+    }),
+>>>>>>> master
   })
   @put('/v1/powerball/drawing/winnings')
   public async newWinnings(): Promise<OsResponse<Array<DrawingWinning>>> {

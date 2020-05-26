@@ -1,13 +1,17 @@
 import * as Hapi from '@hapi/hapi';
-import { badRequest, Boom } from '@hapi/boom';
+import * as Boom from '@hapi/boom';
 import Logger from './helpers/logger';
 import Router from './router';
+import { createConnection, getConnection } from 'typeorm';
+import { TypeOrmHelpers } from './helpers/orm-helpers';
 
 export default class Api {
   private static _instance: Hapi.Server;
 
   public static async start(): Promise<Hapi.Server> {
     try {
+      await createConnection(TypeOrmHelpers.getTypeOrmConnectionOptions());
+
       const serverConfig: Hapi.ServerOptions = {
         port: process.env.SERVICE_PORT || 3050,
         routes: {
@@ -16,7 +20,7 @@ export default class Api {
               if (process.env.NODE_ENV === 'production' && err) {
                 // In prod, log a limited error message and throw the default Bad Request error.
                 Logger.instance.error({ type: 'ValidationError', message: err.message });
-                throw badRequest(`Invalid request payload input`);
+                throw Boom.badRequest(`Invalid request payload input`);
               } else {
                 // During development respond with the full error.
                 throw err;
@@ -39,7 +43,9 @@ export default class Api {
     }
   }
 
-  public static async stop(): Promise<void> {}
+  public static async stop(): Promise<void> {
+    await getConnection().close();
+  }
 
   public static get instance(): Hapi.Server {
     return Api._instance;

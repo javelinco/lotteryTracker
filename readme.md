@@ -14,7 +14,7 @@ The lottery tracking allows the user to input the tickets they have purchased, a
 
 ### To Run the Image Locally:
 
-    docker run --env-file .env -v src:/app/ -p 3060:3050 --name lottery-tracker -d mmunson/lottery-tracker
+    docker-compose up --build
 
 ### To See the logs from Docker container:
 
