@@ -1,4 +1,5 @@
-import { Powerball, TicketWinning, TicketNumberWinning } from './Powerball';
+import { Powerball } from './Powerball';
+import { TicketWinning, TicketNumberWinning } from './interfaces/drawing-winning';
 import { mock, instance } from 'ts-mockito';
 import { PowerballDrawingRepository } from './repositories/powerball-drawing';
 import { PowerballTicketDrawingRepository } from './repositories/powerball-ticket-drawing';

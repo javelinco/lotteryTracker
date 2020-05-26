@@ -1,10 +1,10 @@
 import { Controller, controller, post, put, get, validate, options } from 'hapi-decorators';
 import * as Hapi from '@hapi/hapi';
-import { PowerballTicketPurchase } from '../interfaces/powerball-ticket-purchase';
 import { OsResponse, HapiRequest } from '../interfaces/hapi-request';
 import Joi = require('@hapi/joi');
 import { PowerballNumberValidator } from '../validators/powerball-number';
-import { Powerball, DrawingWinning } from '../powerball';
+import { Powerball } from '../powerball';
+import { DrawingWinning } from '../interfaces/drawing-winning';
 import { PowerballTicketReport } from '../interfaces/powerball-ticket-report';
 
 @controller('')
@@ -49,7 +49,7 @@ export class PowerballController implements Controller {
     })
   })
   @post('/v1/powerball/ticket')
-  public async ticket(request: HapiRequest): Promise<OsResponse<PowerballTicketPurchase>> {
+  public async ticket(request: HapiRequest): Promise<OsResponse<PowerballTicketReport>> {
     return await new Powerball().addTicket(
       request.payload.purchaseDate,
       request.payload.powerPlay,

@@ -15,26 +15,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { PowerballNumber } from './interfaces/powerball-number';
 import { PowerballTicketDrawing } from './interfaces/powerball-ticket-drawing';
 import { OwnerWinning } from './interfaces/owner-winning';
+import { DrawingWinning, TicketWinning, TicketNumberWinning } from './interfaces/drawing-winning';
 
-export interface DrawingWinning {
-  drawingDate: Date;
-  ticketWinnings: Array<TicketWinning>;
-}
-
-export interface TicketWinning {
-  ticketId: string;
-  drawingDate: Date;
-  ticketNumberWinnings: Array<TicketNumberWinning>;
-}
-
-export interface TicketNumberWinning {
-  powerballTicketNumber: PowerballTicketNumber;
-  matches: number;
-  powerNumberMatch: boolean;
-  amount: number;
-}
-
-export interface PowerballDrawingEntry {
+interface PowerballDrawingEntry {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   field_winning_numbers: string;
   // eslint-disable-next-line @typescript-eslint/naming-convention
