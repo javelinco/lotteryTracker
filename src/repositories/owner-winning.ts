@@ -37,6 +37,17 @@ export class OwnerWinningRepository {
     return this.ConvertFromEntity(loadedEntity);
   }
 
+  public async getAllForTicket(ticketId: string): Promise<Array<OwnerWinning>> {
+    const ownerWinningRepository = getConnection().getRepository(OwnerWinningEntity);
+    const loadedEntities = await ownerWinningRepository.find({
+      where: `ticketId = '${ticketId}'`
+    });
+    const convertedEntities = (loadedEntities.map(x => this.ConvertFromEntity(x)).filter(x => x !== null) as unknown) as Array<
+      OwnerWinning
+    >;
+    return convertedEntities;
+  }
+
   public async save(ownerWinning: OwnerWinning): Promise<OwnerWinning | null> {
     const ownerWinningRepository = getConnection().getRepository(OwnerWinningEntity);
     const savedEntity = await ownerWinningRepository.save(ownerWinning);

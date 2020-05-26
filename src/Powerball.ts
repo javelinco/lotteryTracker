@@ -9,6 +9,7 @@ import axios from 'axios';
 import * as moment from 'moment';
 import { dateFormat } from './helpers/date-format';
 import { OwnerWinningRepository } from './repositories/owner-winning';
+import { PowerballTicketReport } from './interfaces/powerball-ticket-report';
 
 export interface DrawingWinning {
   drawingDate: Date;
@@ -59,6 +60,26 @@ export class Powerball {
     this.powerballTicketNumberRepository = powerballTicketNumberRepository;
     this.powerballTicketRepository = powerballTicketRepository;
     this.ownerWinningRepository = ownerWinningRepository;
+  }
+
+  public async getPowerballReportsByDrawingDate(drawingDate: Date): Promise<Array<PowerballTicketReport>> {
+    const powerballTicketReports: Array<PowerballTicketReport> = [];
+
+    // Get all matching PowerballTicketDrawing records
+    const powerballTicketDrawings = await this.powerballTicketDrawingRepository.getByDrawingDate(drawingDate);
+    for (const ticketId of powerballTicketDrawings.map(x => x.ticketId)) {
+      const powerballTicket = await this.powerballTicketRepository.load(ticketId);
+      const powerballTicketReport: PowerballTicketReport = {
+        ticket: powerballTicket!,
+        numbers: await this.powerballTicketNumberRepository.load(ticketId),
+        drawings: await this.powerballTicketDrawingRepository.getAllForTicket(ticketId),
+        winnings: await this.ownerWinningRepository.getAllForTicket(ticketId)
+      };
+
+      powerballTicketReports.push(powerballTicketReport);
+    }
+
+    return powerballTicketReports;
   }
 
   public async getWinningsSinceLastDrawing(): Promise<Array<DrawingWinning>> {

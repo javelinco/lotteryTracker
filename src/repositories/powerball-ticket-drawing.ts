@@ -35,6 +35,14 @@ export class PowerballTicketDrawingRepository {
     return powerballTicketDrawing !== undefined ? powerballTicketDrawing : null;
   }
 
+  public async getAllForTicket(ticketId: string): Promise<Array<PowerballTicketDrawing>> {
+    const powerballTicketDrawingRepository = getConnection().getRepository(PowerballTicketDrawingEntity);
+    const powerballTicketDrawing = await powerballTicketDrawingRepository.find({
+      where: `ticketid = '${ticketId}'`
+    });
+    return powerballTicketDrawing !== undefined ? powerballTicketDrawing : [];
+  }
+
   public async getByDrawingDate(drawingDate: Date): Promise<Array<PowerballTicketDrawing>> {
     const powerballTicketDrawingRepository = getConnection().getRepository(PowerballTicketDrawingEntity);
     const powerballTicketDrawing = await powerballTicketDrawingRepository.find({

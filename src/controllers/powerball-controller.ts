@@ -1,4 +1,4 @@
-import { Controller, controller, post, put, validate, options } from 'hapi-decorators';
+import { Controller, controller, post, put, get, validate, options } from 'hapi-decorators';
 import * as Hapi from '@hapi/hapi';
 import { PowerballTicketPurchase } from '../interfaces/powerball-ticket-purchase';
 import { OsResponse, HapiRequest } from '../interfaces/hapi-request';
@@ -6,11 +6,28 @@ import Joi = require('@hapi/joi');
 import { PowerballNumberValidator } from '../validators/powerball-number';
 import { addPowerballTicket } from '../add-powerball-ticket';
 import { Powerball, DrawingWinning } from '../powerball';
+import { PowerballTicketReport } from '../interfaces/powerball-ticket-report';
 
-@controller('/v1/powerball')
+@controller('')
 export class PowerballController implements Controller {
   public baseUrl!: string;
   public routes!: () => Array<Hapi.ServerRoute>;
+
+  @options({
+    tags: ['api'],
+    description: 'Gets all tickets that have a drawing for the supplied date'
+  })
+  @validate({
+    params: Joi.object().keys({
+      drawingDate: Joi.date()
+        .required()
+        .description('Date of Powerball drawing')
+    })
+  })
+  @get('/v1/powerball/ticket/{drawingDate}')
+  public async getTicketsByDrawingDate(request: HapiRequest): Promise<OsResponse<Array<PowerballTicketReport>>> {
+    return await new Powerball().getPowerballReportsByDrawingDate(new Date(request.params.drawingDate));
+  }
 
   @options({
     tags: ['api'],
@@ -32,7 +49,7 @@ export class PowerballController implements Controller {
         )
     })
   })
-  @post('/ticket')
+  @post('/v1/powerball/ticket')
   public async ticket(request: HapiRequest): Promise<OsResponse<PowerballTicketPurchase>> {
     return await addPowerballTicket(
       request.payload.purchaseDate,
@@ -46,7 +63,7 @@ export class PowerballController implements Controller {
     tags: ['api'],
     description: 'Checks for new Powerball winnings'
   })
-  @put('/drawing/winnings')
+  @put('/v1/powerball/drawing/winnings')
   public async newWinnings(): Promise<OsResponse<Array<DrawingWinning>>> {
     return await new Powerball().getWinningsSinceLastDrawing();
   }
