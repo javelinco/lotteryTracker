@@ -5,7 +5,7 @@ import { OsResponse, HapiRequest } from '../interfaces/hapi-request';
 import Joi = require('@hapi/joi');
 import { PowerballNumberValidator } from '../validators/powerball-number';
 import { addPowerballTicket } from '../add-powerball-ticket';
-import { Powerball, DrawingWinning } from '../Powerball';
+import { Powerball, DrawingWinning } from '../powerball';
 
 @controller('/v1/powerball')
 export class PowerballController implements Controller {

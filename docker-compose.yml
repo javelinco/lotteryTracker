@@ -1,0 +1,13 @@
+version: '2.4'
+
+services:
+  api:
+    build:
+      context: .
+      target: dev
+    ports:
+      - '3060:3060'
+      - '9229:9229'
+    volumes:
+      - .:/opt/app:delegated
+      - /opt/app/node_modules
